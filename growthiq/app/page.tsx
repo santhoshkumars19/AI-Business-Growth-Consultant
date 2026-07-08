@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 
+// Trigger Vercel rebuild
 const features = [
   { icon: '🧠', title: 'AI-Powered Analysis', desc: 'Upload your metrics and get instant, personalised insights tailored to your industry.' },
   { icon: '📊', title: 'Visual Dashboards', desc: 'Charts, scores, and trends in real time — all in one beautiful, unified view.' },
