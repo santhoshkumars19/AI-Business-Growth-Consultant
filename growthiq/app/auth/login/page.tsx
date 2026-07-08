@@ -20,14 +20,15 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      await login(email, password);
-      if (loginType === 'admin') {
-        router.push('/admin/users');
-      } else {
-        router.push('/dashboard');
+      const authUser = await login(email, password);
+      if (loginType === 'admin' && authUser.role !== 'admin') {
+        setError('This account does not have admin permissions. Please sign in as a user or use an admin account.');
+        setLoading(false);
+        return;
       }
-    } catch {
-      setError('Invalid credentials. Please make sure the password matches and role permissions are set.');
+      router.push(loginType === 'admin' ? '/admin/users' : '/dashboard');
+    } catch (err: any) {
+      setError(err?.message || 'Invalid credentials. Please make sure the password matches and role permissions are set.');
     } finally {
       setLoading(false);
     }

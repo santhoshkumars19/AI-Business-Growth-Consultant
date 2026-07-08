@@ -14,7 +14,7 @@ interface Recommendation {
 
 interface AnalysisData {
   id: string;
-  health_score: int;
+  health_score: number;
   score_breakdown: {
     profitability: number;
     growth: number;

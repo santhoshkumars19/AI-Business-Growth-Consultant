@@ -1,7 +1,9 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api/v1';
+const API_BASE_URL = typeof window !== 'undefined'
+  ? `${window.location.protocol}//${window.location.hostname}:8000/api/v1`
+  : 'http://127.0.0.1:8000/api/v1';
 
 interface BusinessData {
   business_name: string;
@@ -31,7 +33,7 @@ interface AuthUser {
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<AuthUser>;
   register: (email: string, password: string, name: string, role?: string) => Promise<void>;
   logout: () => void;
   saveBusinessData: (data: BusinessData) => Promise<void>;
@@ -103,7 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<AuthUser> => {
     const data = await fetchWithAuth('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
@@ -116,15 +118,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       businessData = await fetchWithAuth('/business');
     } catch (e) {
-      // ignore
+      // ignore missing business data or token issues until after login
     }
 
-    const authUser = {
+    const authUser: AuthUser = {
       ...data.user,
       businessData,
     };
 
     setUser(authUser);
+    return authUser;
   };
 
   const register = async (email: string, password: string, name: string, role: string = 'user') => {

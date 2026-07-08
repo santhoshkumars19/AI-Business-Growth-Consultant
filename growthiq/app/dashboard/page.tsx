@@ -6,7 +6,8 @@ import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement,
   BarElement, ArcElement, Filler, Tooltip, Legend,
 } from 'chart.js';
-import { Line, Bar, Doughnut } from 'react-chartjs-2';
+import { Chart, Line, Bar, Doughnut } from 'react-chartjs-2';
+import type { ChartData, ChartOptions } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Filler, Tooltip, Legend);
 
@@ -160,14 +161,15 @@ export default function DashboardPage() {
     }]
   };
 
-  const customerData = {
-    labels: chartMonths, datasets: [
+  const customerData: ChartData<'bar' | 'line'> = {
+    labels: chartMonths,
+    datasets: [
       { type:'bar' as const, label:'New Customers', data:[18,8,7,7,13,10], backgroundColor:'rgba(99,102,241,0.4)', borderRadius:6 },
       { type:'line' as const, label:'Total Customers', data:[customersVal - 50, customersVal - 40, customersVal - 30, customersVal - 20, customersVal - 10, customersVal], borderColor:'#6366F1', fill:false, tension:0.4, yAxisID:'y1', pointRadius:4, pointBackgroundColor:'#6366F1', pointBorderColor:'#fff', pointBorderWidth:2 },
     ]
-  };
+  } as unknown as ChartData<'bar' | 'line'>;
 
-  const customerOptions = {
+  const customerOptions: ChartOptions<'bar' | 'line'> = {
     ...chartOptions,
     scales: { ...chartOptions.scales, y1: { position:'right' as const, grid:{display:false}, ticks:{ color:'var(--text-muted)', font:{size:11} }, border:{display:false} } }
   };
@@ -236,7 +238,7 @@ export default function DashboardPage() {
         <div className="card p-6">
           <div className="section-header"><h2 className="section-title">👥 Customer Growth</h2></div>
           <div className="chart-container" style={{ height:200 }}>
-            <Bar data={customerData} options={customerOptions as Parameters<typeof Bar>[0]['options']} />
+            <Chart type="bar" data={customerData} options={customerOptions as Parameters<typeof Chart>[0]['options']} />
           </div>
         </div>
       </div>

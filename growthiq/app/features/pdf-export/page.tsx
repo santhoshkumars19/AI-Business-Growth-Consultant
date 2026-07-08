@@ -73,7 +73,7 @@ export default function PdfExportPage() {
           </div>
           <div className="input-group">
             <label className="input-label">Report Title</label>
-            <input className="input" defaultValue={`${user?.businessData?.businessName||'Business'} — Growth Analysis Report`} />
+            <input className="input" defaultValue={`${user?.businessData?.business_name || 'Business'} — Growth Analysis Report`} />
           </div>
         </div>
 
@@ -89,7 +89,7 @@ export default function PdfExportPage() {
                   <div style={{ fontSize:'0.7rem', color:'#6B7280' }}>Business Analysis Report</div>
                 </div>
                 <div style={{ textAlign:'right', fontSize:'0.68rem', color:'#6B7280' }}>
-                  <div>{user?.businessData?.businessName||'Bloom Bakery'}</div>
+                  <div>{user?.businessData?.business_name || 'Bloom Bakery'}</div>
                   <div>{new Date().toLocaleDateString('en-IN')}</div>
                 </div>
               </div>

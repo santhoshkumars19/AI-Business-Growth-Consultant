@@ -4,10 +4,12 @@ import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-const DEFAULT_BUDGET = { marketing:28000, operations:30000, salaries:85000, tech:8000, misc:7000 };
-const REVENUE_MULTIPLIERS = { marketing:2.5, operations:0.3, salaries:1.8, tech:0.8, misc:0.2 };
-const CATEGORY_LABELS: Record<string, string> = { marketing:'Marketing & Ads', operations:'Operations', salaries:'Salaries', tech:'Tech & Tools', misc:'Miscellaneous' };
-const CATEGORY_COLORS: Record<string, string> = { marketing:'#6366F1', operations:'#8B5CF6', salaries:'#EC4899', tech:'#10B981', misc:'#F59E0B' };
+const BUDGET_CATEGORIES = ['marketing', 'operations', 'salaries', 'tech', 'misc'] as const;
+type BudgetCategory = (typeof BUDGET_CATEGORIES)[number];
+const DEFAULT_BUDGET: Record<BudgetCategory, number> = { marketing:28000, operations:30000, salaries:85000, tech:8000, misc:7000 };
+const REVENUE_MULTIPLIERS: Record<BudgetCategory, number> = { marketing:2.5, operations:0.3, salaries:1.8, tech:0.8, misc:0.2 };
+const CATEGORY_LABELS: Record<BudgetCategory, string> = { marketing:'Marketing & Ads', operations:'Operations', salaries:'Salaries', tech:'Tech & Tools', misc:'Miscellaneous' };
+const CATEGORY_COLORS: Record<BudgetCategory, string> = { marketing:'#6366F1', operations:'#8B5CF6', salaries:'#EC4899', tech:'#10B981', misc:'#F59E0B' };
 
 export default function BudgetEstimatorPage() {
   const [budget, setBudget] = useState(DEFAULT_BUDGET);
@@ -16,18 +18,20 @@ export default function BudgetEstimatorPage() {
 
   const set = (k: keyof typeof DEFAULT_BUDGET, v: number) => setBudget(b => ({ ...b, [k]: v }));
   const totalBudget = Object.values(budget).reduce((a,b)=>a+b,0);
-  const projectedRevenue = useMemo(()=>
-    Object.entries(budget).reduce((acc,[k,v])=>acc+(v*REVENUE_MULTIPLIERS[k]),0)
-  , [budget]);
+  const budgetEntries = Object.entries(budget) as [BudgetCategory, number][];
+  const budgetKeys = Object.keys(budget) as BudgetCategory[];
+  const projectedRevenue = useMemo(() =>
+    budgetEntries.reduce((acc,[k,v]) => acc + (v * REVENUE_MULTIPLIERS[k]), 0)
+  , [budgetEntries]);
   const roi = totalBudget > 0 ? (((projectedRevenue - totalBudget) / totalBudget)*100).toFixed(1) : '0';
   const breakeven = totalBudget;
   const periods = ['1M','3M','6M','12M'];
 
   const chartData = {
-    labels: Object.values(CATEGORY_LABELS),
+    labels: budgetKeys.map(k => CATEGORY_LABELS[k]),
     datasets: [
-      { label:'Budget Spent', data:Object.keys(budget).map(k=>budget[k as keyof typeof budget]), backgroundColor:Object.keys(budget).map(k=>CATEGORY_COLORS[k]), borderRadius:6 },
-      { label:'Projected Return', data:Object.keys(budget).map(k=>budget[k as keyof typeof budget]*REVENUE_MULTIPLIERS[k]), backgroundColor:Object.keys(budget).map(k=>CATEGORY_COLORS[k]+'60'), borderRadius:6 },
+      { label:'Budget Spent', data:budgetKeys.map(k => budget[k]), backgroundColor:budgetKeys.map(k => CATEGORY_COLORS[k]), borderRadius:6 },
+      { label:'Projected Return', data:budgetKeys.map(k => budget[k] * REVENUE_MULTIPLIERS[k]), backgroundColor:budgetKeys.map(k => `${CATEGORY_COLORS[k]}60`), borderRadius:6 },
     ]
   };
   const chartOptions = {
@@ -73,9 +77,8 @@ export default function BudgetEstimatorPage() {
             </div>
           </div>
           <div className="divider" style={{ marginBottom:20 }} />
-          {Object.keys(budget).map(k=>{
-            const key = k as keyof typeof budget;
-            const pct = totalBudget > 0 ? ((budget[key]/totalBudget)*100).toFixed(0) : 0;
+          {budgetKeys.map(k => {
+            const pct = totalBudget > 0 ? ((budget[k]/totalBudget)*100).toFixed(0) : 0;
             return (
               <div key={k} style={{ marginBottom:20 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
@@ -85,10 +88,10 @@ export default function BudgetEstimatorPage() {
                   </label>
                   <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                     <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>{pct}%</span>
-                    <span style={{ fontFamily:'JetBrains Mono', fontWeight:600, fontSize:'0.875rem' }}>₹{budget[key].toLocaleString('en-IN')}</span>
+                    <span style={{ fontFamily:'JetBrains Mono', fontWeight:600, fontSize:'0.875rem' }}>₹{budget[k].toLocaleString('en-IN')}</span>
                   </div>
                 </div>
-                <input type="range" min="0" max={200000} step={1000} value={budget[key]} onChange={e=>set(key,Number(e.target.value))} style={{ accentColor:CATEGORY_COLORS[k] }} />
+                <input type="range" min="0" max={200000} step={1000} value={budget[k]} onChange={e=>set(k,Number(e.target.value))} style={{ accentColor:CATEGORY_COLORS[k] }} />
                 <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.7rem', color:'var(--text-muted)', marginTop:2 }}>
                   <span>₹0</span><span>₹2,00,000</span>
                 </div>
