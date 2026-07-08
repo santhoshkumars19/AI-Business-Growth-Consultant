@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd growthiq && npm run build",
-  "outputDirectory": "growthiq/.next",
-  "installCommand": "cd growthiq && npm install"
-}
