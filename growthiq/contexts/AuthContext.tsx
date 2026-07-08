@@ -1,9 +1,15 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
 
-const API_BASE_URL = typeof window !== 'undefined'
+let base = process.env.NEXT_PUBLIC_API_URL;
+if (base) {
+  if (!base.endsWith('/api/v1')) {
+    base = base.replace(/\/$/, '') + '/api/v1';
+  }
+}
+const API_BASE_URL = base || (typeof window !== 'undefined'
   ? `${window.location.protocol}//${window.location.hostname}:8000/api/v1`
-  : 'http://127.0.0.1:8000/api/v1';
+  : 'http://127.0.0.1:8000/api/v1');
 
 interface BusinessData {
   business_name: string;
