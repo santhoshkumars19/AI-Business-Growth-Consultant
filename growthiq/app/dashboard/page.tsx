@@ -43,14 +43,14 @@ interface HistoryReport {
 function StatCard({ label, value, delta, deltaUp, icon, accentColor }: { label:string, value:string, delta:string, deltaUp:boolean, icon:string, accentColor:string }) {
   return (
     <div className="stat-card">
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
-        <div>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap: 8 }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
           <div className="stat-label">{label}</div>
           <div className="stat-value" style={{ color: accentColor }}>{value}</div>
         </div>
-        <div style={{ fontSize:'1.5rem' }}>{icon}</div>
+        <div className="stat-icon">{icon}</div>
       </div>
-      <div style={{ marginTop: 12 }}>
+      <div style={{ marginTop: 10 }}>
         <span className={`delta ${deltaUp ? 'delta-up' : 'delta-down'}`}>{deltaUp ? '↑' : '↓'} {delta}</span>
         <span style={{ fontSize:'0.75rem', color:'var(--text-muted)', marginLeft: 6 }}>vs last month</span>
       </div>
