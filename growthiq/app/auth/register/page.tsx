@@ -48,15 +48,15 @@ export default function RegisterPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg-base)' }}>
-      {/* Left Panel */}
-      <div style={{ flex: 1, background: 'var(--gradient-hero)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 48, position: 'relative', overflow: 'hidden' }}>
+    <div className="auth-layout">
+      {/* Left Panel — hidden on mobile */}
+      <div className="auth-panel-left">
         <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 420 }}>
           <div style={{ fontSize: '3.5rem', marginBottom: 20 }}>🚀</div>
-          <h2 style={{ fontFamily: 'Outfit', fontSize: '2rem', fontWeight: 800, color: '#fff', marginBottom: 16 }}>Start your growth journey today</h2>
+          <h2 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, color: '#fff', marginBottom: 16 }}>Start your growth journey today</h2>
           <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1rem', lineHeight: 1.7, marginBottom: 32 }}>Join 2,400+ entrepreneurs who use GrowthIQ AI to make smarter business decisions every month.</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {['✅ Free 14-day trial, no credit card','✅ AI analysis in under 5 seconds','✅ Specific recommendations for your business','✅ Monthly progress tracking & milestones'].map(item => (
               <div key={item} style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 16px', color: '#fff', fontSize: '0.875rem', textAlign: 'left' }}>{item}</div>
             ))}
@@ -64,92 +64,74 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Right Panel */}
-      <div style={{ width: 480, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '48px 52px', background: 'var(--bg-surface)', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}>⚡</div>
-            <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-primary)' }}>GrowthIQ</span>
-          </Link>
-          <button onClick={toggle} className="btn btn-ghost btn-sm" style={{ fontSize: '1rem' }}>{theme === 'dark' ? '☀️' : '🌙'}</button>
+      {/* Right Panel — Form */}
+      <div className="auth-panel-right">
+        <div style={{ maxWidth: 420, width: '100%', margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 26 }}>
+            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}>⚡</div>
+              <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-primary)' }}>GrowthIQ</span>
+            </Link>
+            <button onClick={toggle} className="btn btn-ghost btn-sm" style={{ fontSize: '1rem' }}>{theme === 'dark' ? '☀️' : '🌙'}</button>
+          </div>
+
+          <h1 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.4rem, 4vw, 1.875rem)', fontWeight: 800, marginBottom: 6 }}>Create your account</h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: 22 }}>Already have one? <Link href="/auth/login" className="link">Sign in →</Link></p>
+
+          {/* Role Selection Tabs */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 22, background: 'var(--bg-elevated)', padding: 4, borderRadius: 8 }}>
+            {(['user', 'admin'] as const).map(type => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => setRole(type)}
+                style={{
+                  flex: 1, padding: '8px 12px', borderRadius: 6,
+                  fontSize: '0.875rem', fontWeight: 600,
+                  background: role === type ? (type === 'admin' ? 'var(--accent-danger)' : 'var(--accent-primary)') : 'transparent',
+                  color: role === type ? '#fff' : 'var(--text-secondary)',
+                  border: 'none', cursor: 'pointer', transition: 'all 0.2s ease'
+                }}
+              >
+                {type === 'user' ? '👤 Register User' : '🛡️ Register Admin'}
+              </button>
+            ))}
+          </div>
+
+          {error && <div style={{ background: 'rgba(var(--accent-danger-rgb),0.1)', border: '1px solid var(--accent-danger)', borderRadius: 10, padding: '12px 16px', color: 'var(--accent-danger)', fontSize: '0.875rem', marginBottom: 18 }}>⚠️ {error}</div>}
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div className="input-group">
+              <label className="input-label">Full Name</label>
+              <input className="input" type="text" placeholder="Priya Sharma" value={form.name} onChange={e => set('name', e.target.value)} required />
+            </div>
+            <div className="input-group">
+              <label className="input-label">Email address</label>
+              <input className="input" type="email" placeholder="you@company.com" value={form.email} onChange={e => set('email', e.target.value)} required autoComplete="email" />
+            </div>
+            <div className="input-group">
+              <label className="input-label">Password</label>
+              <input className="input" type="password" placeholder="Create a strong password" value={form.password} onChange={e => set('password', e.target.value)} required />
+              <PasswordStrength password={form.password} />
+            </div>
+            <div className="input-group">
+              <label className="input-label">Confirm Password</label>
+              <input className="input" type="password" placeholder="Repeat your password" value={form.confirm} onChange={e => set('confirm', e.target.value)} required style={{ borderColor: form.confirm && form.confirm !== form.password ? 'var(--accent-danger)' : '' }} />
+              {form.confirm && form.confirm !== form.password && <div className="error-msg">Passwords don't match</div>}
+            </div>
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', margin: '6px 0 2px' }}>
+              <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} style={{ accentColor: 'var(--accent-primary)', marginTop: 3, flexShrink: 0 }} />
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                I agree to the <Link href="/terms" className="link">Terms of Service</Link> and <Link href="/privacy" className="link">Privacy Policy</Link>
+              </span>
+            </label>
+            <button type="submit" className="btn btn-primary btn-lg btn-full" style={{ marginTop: 4, background: role === 'admin' ? 'var(--accent-danger)' : 'var(--accent-primary)' }} disabled={loading}>
+              {loading ? 'Creating account...' : role === 'admin' ? 'Sign Up as Admin →' : 'Sign Up as User →'}
+            </button>
+          </form>
+
+          <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 22 }}>🔒 All data is securely processed and encrypted.</p>
         </div>
-
-        <h1 style={{ fontFamily: 'Outfit', fontSize: '1.875rem', fontWeight: 800, marginBottom: 6 }}>Create your account</h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: 24 }}>Already have one? <Link href="/auth/login" className="link">Sign in →</Link></p>
-
-        {/* Role Selection Tabs */}
-        <div style={{ display: 'flex', gap: 10, marginBottom: 24, background: 'var(--bg-elevated)', padding: 4, borderRadius: 8 }}>
-          <button 
-            type="button"
-            onClick={() => setRole('user')} 
-            style={{ 
-              flex: 1, 
-              padding: '8px 12px', 
-              borderRadius: 6, 
-              fontSize: '0.875rem', 
-              fontWeight: 600,
-              background: role === 'user' ? 'var(--accent-primary)' : 'transparent',
-              color: role === 'user' ? '#fff' : 'var(--text-secondary)',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            👤 Register User
-          </button>
-          <button 
-            type="button"
-            onClick={() => setRole('admin')} 
-            style={{ 
-              flex: 1, 
-              padding: '8px 12px', 
-              borderRadius: 6, 
-              fontSize: '0.875rem', 
-              fontWeight: 600,
-              background: role === 'admin' ? 'var(--accent-danger)' : 'transparent',
-              color: role === 'admin' ? '#fff' : 'var(--text-secondary)',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            🛡️ Register Admin
-          </button>
-        </div>
-
-        {error && <div style={{ background: 'rgba(var(--accent-danger-rgb),0.1)', border: '1px solid var(--accent-danger)', borderRadius: 10, padding: '12px 16px', color: 'var(--accent-danger)', fontSize: '0.875rem', marginBottom: 20 }}>⚠️ {error}</div>}
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <div className="input-group">
-            <label className="input-label">Full Name</label>
-            <input className="input" type="text" placeholder="Priya Sharma" value={form.name} onChange={e => set('name', e.target.value)} required />
-          </div>
-          <div className="input-group">
-            <label className="input-label">Email address</label>
-            <input className="input" type="email" placeholder="you@company.com" value={form.email} onChange={e => set('email', e.target.value)} required autoComplete="email" />
-          </div>
-          <div className="input-group">
-            <label className="input-label">Password</label>
-            <input className="input" type="password" placeholder="Create a strong password" value={form.password} onChange={e => set('password', e.target.value)} required />
-            <PasswordStrength password={form.password} />
-          </div>
-          <div className="input-group">
-            <label className="input-label">Confirm Password</label>
-            <input className="input" type="password" placeholder="Repeat your password" value={form.confirm} onChange={e => set('confirm', e.target.value)} required style={{ borderColor: form.confirm && form.confirm !== form.password ? 'var(--accent-danger)' : '' }} />
-            {form.confirm && form.confirm !== form.password && <div className="error-msg">Passwords don't match</div>}
-          </div>
-          <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', margin: '8px 0 4px' }}>
-            <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} style={{ accentColor: 'var(--accent-primary)', marginTop: 3 }} />
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              I agree to the <Link href="/terms" className="link">Terms of Service</Link> and <Link href="/privacy" className="link">Privacy Policy</Link>
-            </span>
-          </label>
-          <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: 4, background: role === 'admin' ? 'var(--accent-danger)' : 'var(--accent-primary)' }} disabled={loading}>
-            {loading ? 'Creating account...' : role === 'admin' ? 'Sign Up as Admin →' : 'Sign Up as User →'}
-          </button>
-        </form>
-
-        <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 24 }}>🔒 All data is securely processed and encrypted.</p>
       </div>
     </div>
   );

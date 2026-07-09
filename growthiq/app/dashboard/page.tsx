@@ -187,16 +187,16 @@ export default function DashboardPage() {
   return (
     <div>
       {/* Page Header */}
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24 }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20, gap:12, flexWrap:'wrap' }}>
         <div>
-          <h1 style={{ fontSize:'1.5rem', fontWeight:800, marginBottom:4 }}>
+          <h1 style={{ fontSize:'clamp(1.2rem, 4vw, 1.5rem)', fontWeight:800, marginBottom:4 }}>
             {greeting}, {user?.name || 'Partner'}! 👋
           </h1>
           <p style={{ color:'var(--text-secondary)', fontSize:'0.875rem' }}>
             {biz.business_name} · {biz.industry} · Last updated today
           </p>
         </div>
-        <div style={{ display:'flex', gap:10 }}>
+        <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
           <Link href="/onboarding" className="btn btn-ghost btn-sm">🔄 Update Data</Link>
           <Link href="/analysis" className="btn btn-primary btn-sm">📄 Full Report</Link>
         </div>

@@ -125,14 +125,14 @@ export default function OnboardingPage() {
   }, [step, router]);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: 'clamp(16px, 4vw, 40px) 16px' }}>
       {/* Step 1 — Theme Selection */}
       {step === 1 && (
         <div style={{ maxWidth: 600, width: '100%', animation: 'fadeSlideUp 0.4s ease' }}>
           <StepIndicator step={1} />
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>✨</div>
-            <h1 style={{ fontFamily: 'Outfit', fontSize: '2rem', fontWeight: 800, marginBottom: 10 }}>How do you like it?</h1>
+          <h1 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: 800, marginBottom: 10 }}>How do you like it?</h1>
             <p style={{ color: 'var(--text-secondary)' }}>Choose your preferred theme. You can always change this in settings.</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
@@ -165,11 +165,11 @@ export default function OnboardingPage() {
         <div style={{ maxWidth: 640, width: '100%', animation: 'fadeSlideUp 0.4s ease' }}>
           <StepIndicator step={2} />
           <div style={{ marginBottom: 32 }}>
-            <h1 style={{ fontFamily: 'Outfit', fontSize: '2rem', fontWeight: 800, marginBottom: 8 }}>Tell us about your business</h1>
+          <h1 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.4rem, 5vw, 2rem)', fontWeight: 800, marginBottom: 8 }}>Tell us about your business</h1>
             <p style={{ color: 'var(--text-secondary)' }}>This takes 2 minutes. Your data stays private and secure. We use it only to generate your personalised AI analysis.</p>
           </div>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: 16 }}>
               <div className="input-group">
                 <label className="input-label">Business Name *</label>
                 <input className={`input ${errors.businessName ? 'input-error' : ''}`} type="text" placeholder="e.g. Bloom Bakery" value={form.businessName} onChange={e => set('businessName', e.target.value)} />

@@ -134,32 +134,32 @@ export default function AnalysisPage() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-base)' }}>
       {/* Top bar */}
-      <div style={{ background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}>⚡</div>
-          <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.1rem' }}>GrowthIQ <span style={{ color: 'var(--accent-primary)' }}>AI</span></span>
-          <span style={{ color: 'var(--border)', margin: '0 6px' }}>|</span>
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>AI Analysis Report</span>
+      <div style={{ background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)', padding: '0 16px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50, gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 26, height: 26, borderRadius: 6, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>⚡</div>
+          <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1rem' }}>GrowthIQ <span style={{ color: 'var(--accent-primary)' }}>AI</span></span>
+          <span className="hide-mobile" style={{ color: 'var(--border)', margin: '0 4px' }}>|</span>
+          <span className="hide-mobile" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>AI Analysis Report</span>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <Link href="/dashboard" className="btn btn-primary btn-sm">Go to Dashboard →</Link>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Link href="/dashboard" className="btn btn-primary btn-sm">Dashboard →</Link>
         </div>
       </div>
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 24px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: 'clamp(16px, 3vw, 32px) clamp(12px, 3vw, 24px)' }}>
         {/* Hero Score */}
-        <div className="card" style={{ padding: '36px 40px', marginBottom: 28, background: 'var(--gradient-card)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div className="card" style={{ padding: 'clamp(20px, 4vw, 40px) clamp(16px, 4vw, 40px)', marginBottom: 24, background: 'var(--gradient-card)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: 'rgba(var(--accent-primary-rgb),0.08)' }} />
-          <div className="badge badge-primary" style={{ marginBottom: 16 }}>📊 Analysis Complete — {new Date(analysis.created_at || Date.now()).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' })}</div>
-          <h1 style={{ fontFamily: 'Outfit', fontSize: '2rem', fontWeight: 800, marginBottom: 8 }}>{biz?.business_name || 'Your Business'} — AI Analysis</h1>
+          <div className="badge badge-primary" style={{ marginBottom: 14 }}>📊 Analysis Complete — {new Date(analysis.created_at || Date.now()).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' })}</div>
+          <h1 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.2rem, 4vw, 2rem)', fontWeight: 800, marginBottom: 8 }}>{biz?.business_name || 'Your Business'} — AI Analysis</h1>
           <p style={{ color: 'var(--text-secondary)', marginBottom: 28 }}>{biz?.industry || 'Business'} · {biz?.city || 'Tamil Nadu'}, {biz?.state || 'India'}</p>
           <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', marginBottom: 24 }}>
-            <div style={{ fontFamily: 'JetBrains Mono', fontSize: '5rem', fontWeight: 700, color: scoreColor, lineHeight: 1 }}>{analysis.health_score}</div>
+            <div style={{ fontFamily: 'JetBrains Mono', fontSize: 'clamp(3rem, 8vw, 5rem)', fontWeight: 700, color: scoreColor, lineHeight: 1 }}>{analysis.health_score}</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>out of 100</div>
             <div className="badge badge-success" style={{ marginTop: 10 }}>{label}</div>
           </div>
           <p style={{ color: 'var(--text-secondary)', maxWidth: 650, margin: '0 auto 24px', lineHeight: 1.6 }}>{analysis.summary}</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, maxWidth: 640, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))', gap: 12, maxWidth: 640, margin: '0 auto' }}>
             {[
               ['💰','Revenue',`₹${((biz?.monthly_revenue||0)/1000).toFixed(0)}K`,'success'],
               ['📈','Profit Margin',`${margin}%`,'primary'],

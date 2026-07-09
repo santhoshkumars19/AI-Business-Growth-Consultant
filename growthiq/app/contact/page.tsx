@@ -43,26 +43,26 @@ export default function ContactPage() {
       {/* Navbar */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 200,
-        padding: '0 24px', height: 64,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 16px', height: 60,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
         background: 'var(--bg-surface)',
         borderBottom: '1px solid var(--border)',
         backdropFilter: 'blur(16px)',
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>⚡</div>
-          <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.25rem', color: 'var(--text-primary)' }}>GrowthIQ<span style={{ color: 'var(--accent-primary)' }}> AI</span></span>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <div style={{ width: 28, height: 28, borderRadius: 7, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.95rem' }}>⚡</div>
+          <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-primary)' }}>GrowthIQ<span style={{ color: 'var(--accent-primary)' }}> AI</span></span>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Link href="/pricing" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Pricing</Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Link href="/pricing" className="hide-mobile" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Pricing</Link>
           <button onClick={toggle} className="btn btn-ghost btn-sm" style={{ fontSize: '1rem' }}>{theme === 'dark' ? '☀️' : '🌙'}</button>
-          <Link href="/auth/login" className="btn btn-ghost btn-sm">Sign In</Link>
+          <Link href="/auth/login" className="btn btn-ghost btn-sm hide-mobile">Sign In</Link>
           <Link href="/auth/register" className="btn btn-primary btn-sm">Get Started</Link>
         </div>
       </nav>
 
       {/* Content */}
-      <section style={{ padding: '60px 24px' }}>
+      <section style={{ padding: 'clamp(32px, 6vw, 60px) 16px' }}>
         <div className="grid-2" style={{ maxWidth: 960, margin: '0 auto', alignItems: 'start', gap: 40 }}>
           {/* Info Card */}
           <div style={{ padding: '20px 0' }}>

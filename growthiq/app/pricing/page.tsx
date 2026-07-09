@@ -106,20 +106,20 @@ export default function PricingPage() {
     <div style={{ minHeight: '100vh', background: 'var(--bg-base)' }}>
 
       {/* Navbar */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>⚡</div>
-          <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-primary)' }}>GrowthIQ <span style={{ color: 'var(--accent-primary)' }}>AI</span></span>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)', padding: '0 16px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', flexShrink: 0 }}>
+          <div style={{ width: 28, height: 28, borderRadius: 7, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}>⚡</div>
+          <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-primary)' }}>GrowthIQ <span style={{ color: 'var(--accent-primary)' }}>AI</span></span>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Link href="/" className="btn btn-ghost btn-sm">← Back to Home</Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Link href="/" className="btn btn-ghost btn-sm hide-mobile">← Back</Link>
           <Link href="/auth/login" className="btn btn-primary btn-sm">Login</Link>
           <button onClick={toggle} className="btn btn-ghost btn-sm">{theme === 'dark' ? '☀️' : '🌙'}</button>
         </div>
       </nav>
 
       {/* Hero */}
-      <section style={{ padding: '72px 24px 48px', textAlign: 'center' }}>
+      <section style={{ padding: 'clamp(40px, 8vw, 72px) 16px clamp(32px, 5vw, 48px)', textAlign: 'center' }}>
         <div style={{ display: 'inline-block', padding: '4px 16px', background: 'rgba(var(--accent-primary-rgb),0.12)', color: 'var(--accent-primary)', borderRadius: 99, fontSize: '0.78rem', fontWeight: 700, marginBottom: 18 }}>
           💳 PRICING & PLANS
         </div>
@@ -141,7 +141,7 @@ export default function PricingPage() {
         </div>
 
         {/* Plans Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, maxWidth: 1000, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 20, maxWidth: 1100, margin: '0 auto' }}>
           {PLANS.map((plan, i) => (
             <div key={i} style={{ background: 'var(--bg-surface)', border: plan.primary ? `2px solid var(--accent-primary)` : '1px solid var(--border)', borderRadius: 20, padding: 32, position: 'relative', boxShadow: plan.primary ? 'var(--shadow-glow), var(--shadow-lg)' : 'var(--shadow-sm)', transform: plan.primary ? 'scale(1.03)' : 'none', transition: 'transform 0.2s', textAlign: 'left' }}>
               {plan.badge && (

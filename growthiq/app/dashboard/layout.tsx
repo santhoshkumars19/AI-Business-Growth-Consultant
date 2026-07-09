@@ -25,90 +25,118 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { theme, toggle } = useTheme();
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [greeting, setGreeting] = useState('Good morning');
 
   const handleLogout = () => { logout(); router.push('/'); };
   const initial = user?.name?.[0]?.toUpperCase() || 'U';
 
-  const [greeting, setGreeting] = useState('Good morning');
-
   useEffect(() => {
     const hr = new Date().getHours();
-    if (hr < 12) {
-      setGreeting('Good morning');
-    } else if (hr < 17) {
-      setGreeting('Good afternoon');
-    } else {
-      setGreeting('Good evening');
-    }
+    if (hr < 12) setGreeting('Good morning');
+    else if (hr < 17) setGreeting('Good afternoon');
+    else setGreeting('Good evening');
   }, []);
+
+  // Lock body scroll when mobile menu open
+  useEffect(() => {
+    if (mobileOpen) document.body.classList.add('body-lock');
+    else document.body.classList.remove('body-lock');
+    return () => document.body.classList.remove('body-lock');
+  }, [mobileOpen]);
+
+  // Close mobile menu on route change
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
+
+  const SidebarContent = () => (
+    <>
+      {/* Logo */}
+      <div style={{ padding: '20px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', minHeight: 64 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden' }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>⚡</div>
+          <div className="nav-label" style={{ overflow: 'hidden' }}>
+            <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1rem', whiteSpace: 'nowrap' }}>GrowthIQ <span style={{ color: 'var(--accent-primary)' }}>AI</span></div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: 1 }}>{user?.plan === 'growth' ? '⭐ Growth Plan' : '🌱 Starter'}</div>
+          </div>
+        </div>
+        <button onClick={() => { setCollapsed(!collapsed); setMobileOpen(false); }} style={{ color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0, fontSize: '1rem', lineHeight: 1, padding: 4 }}>
+          {collapsed ? '→' : '←'}
+        </button>
+      </div>
+
+      {/* User Info */}
+      <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.875rem', flexShrink: 0 }}>{initial}</div>
+        <div className="nav-label" style={{ overflow: 'hidden', flex: 1 }}>
+          <div style={{ fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name || 'User'}</div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.businessData?.business_name || 'Add business data'}</div>
+        </div>
+      </div>
+
+      {/* Nav Links */}
+      <nav style={{ flex: 1, padding: '12px 8px', overflowY: 'auto', overflowX: 'hidden' }}>
+        {navItems.map(item => (
+          <Link key={item.href} href={item.href} className={`nav-link ${pathname === item.href ? 'active' : ''}`} style={{ marginBottom: 2 }}>
+            <span className="nav-icon" style={{ fontSize: '1rem' }}>{item.icon}</span>
+            <span className="nav-label">{item.label}</span>
+          </Link>
+        ))}
+        <div style={{ borderTop: '1px solid var(--border)', margin: '12px 8px' }} />
+        <Link href="/features/pdf-export" className="nav-link" style={{ marginBottom: 2 }}>
+          <span className="nav-icon">📄</span>
+          <span className="nav-label">Download Report</span>
+        </Link>
+        <Link href="/admin/users" className="nav-link" style={{ marginBottom: 2 }}>
+          <span className="nav-icon">🛡️</span>
+          <span className="nav-label">Admin Panel</span>
+        </Link>
+      </nav>
+
+      {/* Bottom — theme + logout */}
+      <div style={{ padding: '12px 8px', borderTop: '1px solid var(--border)' }}>
+        <button onClick={handleLogout} className="nav-link" style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', color: 'var(--accent-danger)' }}>
+          <span className="nav-icon" style={{ fontSize: '1rem' }}>🚪</span>
+          <span className="nav-label">Sign Out</span>
+        </button>
+      </div>
+    </>
+  );
 
   return (
     <div className="app-layout">
-      {/* Sidebar */}
-      <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
-        {/* Logo */}
-        <div style={{ padding: '20px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', minHeight: 64 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden' }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>⚡</div>
-            <div className="nav-label" style={{ overflow: 'hidden' }}>
-              <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1rem', whiteSpace: 'nowrap' }}>GrowthIQ <span style={{ color: 'var(--accent-primary)' }}>AI</span></div>
-              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: 1 }}>{user?.plan === 'growth' ? '⭐ Growth Plan' : '🌱 Starter'}</div>
-            </div>
-          </div>
-          <button onClick={() => setCollapsed(!collapsed)} style={{ color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0, fontSize: '1rem', lineHeight: 1 }}>
-            {collapsed ? '→' : '←'}
-          </button>
-        </div>
+      {/* Mobile Sidebar Overlay */}
+      {mobileOpen && (
+        <div className="sidebar-overlay" onClick={() => setMobileOpen(false)} />
+      )}
 
-        {/* User Info */}
-        <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.875rem', flexShrink: 0 }}>{initial}</div>
-          <div className="nav-label" style={{ overflow: 'hidden', flex: 1 }}>
-            <div style={{ fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name || 'User'}</div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.businessData?.business_name || 'Add business data'}</div>
-          </div>
-        </div>
-
-        {/* Nav Links */}
-        <nav style={{ flex: 1, padding: '12px 8px', overflowY: 'auto', overflowX: 'hidden' }}>
-          {navItems.map(item => (
-            <Link key={item.href} href={item.href} className={`nav-link ${pathname === item.href ? 'active' : ''}`} style={{ marginBottom: 2 }}>
-              <span className="nav-icon" style={{ fontSize: '1rem' }}>{item.icon}</span>
-              <span className="nav-label">{item.label}</span>
-            </Link>
-          ))}
-          <div style={{ borderTop: '1px solid var(--border)', margin: '12px 8px' }} />
-          <Link href="/features/pdf-export" className="nav-link" style={{ marginBottom: 2 }}>
-            <span className="nav-icon">📄</span>
-            <span className="nav-label">Download Report</span>
-          </Link>
-          <Link href="/admin/users" className="nav-link" style={{ marginBottom: 2 }}>
-            <span className="nav-icon">🛡️</span>
-            <span className="nav-label">Admin Panel</span>
-          </Link>
-        </nav>
-
-        {/* Bottom — theme + logout */}
-        <div style={{ padding: '12px 8px', borderTop: '1px solid var(--border)' }}>
-          <button onClick={handleLogout} className="nav-link" style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', color: 'var(--accent-danger)' }}>
-            <span className="nav-icon" style={{ fontSize: '1rem' }}>🚪</span>
-            <span className="nav-label">Sign Out</span>
-          </button>
-        </div>
+      {/* Sidebar — Desktop: always visible, Mobile: slide in */}
+      <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
+        <SidebarContent />
       </aside>
 
       {/* Main Content */}
       <main className={`main-content ${collapsed ? 'expanded' : ''}`}>
         {/* Top Bar */}
         <header className="topbar" style={{ justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Hamburger — mobile only */}
+            <button
+              className="hamburger hide-desktop"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle sidebar"
+            >
+              <span /><span /><span />
+            </button>
+            <div className="hide-mobile">
               <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{greeting}, {user?.name?.split(' ')[0] || 'there'}! 👋</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{new Date().toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}</div>
             </div>
+            <div className="hide-desktop" style={{ fontWeight: 600, fontSize: '0.875rem' }}>GrowthIQ AI</div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button onClick={toggle} className="btn btn-ghost btn-sm" style={{ fontSize: '0.9rem' }}>{theme === 'dark' ? '☀️' : '🌙'}</button>
             <div style={{ position: 'relative' }}>
               <button className="btn btn-ghost btn-icon" style={{ position: 'relative' }}>
                 🔔
@@ -125,7 +153,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </div>
                   {[['⚙️ Settings','#'],['📄 Download Report','/features/pdf-export'],['🚪 Sign Out','logout']].map(([label, href]) => (
                     <button key={label} onClick={() => { if(href === 'logout') handleLogout(); else { router.push(href); setShowUserMenu(false); } }}
-                      style={{ width: '100%', padding: '8px 14px', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: href === 'logout' ? 'var(--accent-danger)' : 'var(--text-primary)', borderRadius: 8, display: 'block' }}>
+                      style={{ width: '100%', padding: '8px 14px', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: href === 'logout' ? 'var(--accent-danger)' : 'var(--text-primary)', borderRadius: 8, display: 'block', minHeight: 36 }}>
                       {label}
                     </button>
                   ))}
@@ -140,8 +168,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Mobile Bottom Nav */}
       <div className="mobile-nav" style={{ justifyContent: 'space-around' }}>
         {navItems.slice(0,5).map(item => (
-          <Link key={item.href} href={item.href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '6px 12px', color: pathname === item.href ? 'var(--accent-primary)' : 'var(--text-muted)', fontSize: '0.6rem', fontWeight: 600 }}>
-            <span style={{ fontSize: '1.25rem' }}>{item.icon}</span>
+          <Link key={item.href} href={item.href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '4px 8px', color: pathname === item.href ? 'var(--accent-primary)' : 'var(--text-muted)', fontSize: '0.58rem', fontWeight: 600, flex: 1 }}>
+            <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
             {item.label.split(' ')[0]}
           </Link>
         ))}
