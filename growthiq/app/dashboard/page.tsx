@@ -215,17 +215,17 @@ export default function DashboardPage() {
         <div className="card p-6">
           <div className="section-header">
             <h2 className="section-title">💰 Revenue Chart</h2>
-            <div style={{ display:'flex', gap:4 }}>
+            <div style={{ display:'flex', gap:4, flexShrink:0 }}>
               {(['3M','6M','12M'] as const).map(v => (
                 <button key={v} onClick={() => setChartView(v)} className="btn btn-sm" style={{ padding:'4px 10px', background: chartView===v ? 'var(--accent-primary)' : 'var(--bg-elevated)', color: chartView===v ? '#fff' : 'var(--text-secondary)', fontSize:'0.75rem' }}>{v}</button>
               ))}
             </div>
           </div>
-          <div className="chart-container" style={{ height:200 }}><Line data={revenueData} options={chartOptions as Parameters<typeof Line>[0]['options']} /></div>
+          <div className="chart-container" style={{ height:'clamp(180px, 40vw, 220px)' }}><Line data={revenueData} options={chartOptions as Parameters<typeof Line>[0]['options']} /></div>
         </div>
         <div className="card p-6">
           <div className="section-header"><h2 className="section-title">📊 Expense Breakdown</h2></div>
-          <div className="chart-container" style={{ height:200 }}><Bar data={expenseData} options={{ ...chartOptions, plugins: { ...chartOptions.plugins, legend: { display:true, position:'bottom' as const, labels:{ color:'var(--text-secondary)', font:{size:10}, boxWidth:10, padding:10 } } } } as Parameters<typeof Bar>[0]['options']} /></div>
+          <div className="chart-container" style={{ height:'clamp(180px, 40vw, 220px)' }}><Bar data={expenseData} options={{ ...chartOptions, plugins: { ...chartOptions.plugins, legend: { display:true, position:'bottom' as const, labels:{ color:'var(--text-secondary)', font:{size:10}, boxWidth:10, padding:10 } } } } as Parameters<typeof Bar>[0]['options']} /></div>
         </div>
       </div>
 
@@ -233,11 +233,11 @@ export default function DashboardPage() {
       <div className="grid-2" style={{ marginBottom:24 }}>
         <div className="card p-6">
           <div className="section-header"><h2 className="section-title">📈 Profit Graph</h2></div>
-          <div className="chart-container" style={{ height:200 }}><Line data={profitData} options={chartOptions as Parameters<typeof Line>[0]['options']} /></div>
+          <div className="chart-container" style={{ height:'clamp(180px, 40vw, 220px)' }}><Line data={profitData} options={chartOptions as Parameters<typeof Line>[0]['options']} /></div>
         </div>
         <div className="card p-6">
           <div className="section-header"><h2 className="section-title">👥 Customer Growth</h2></div>
-          <div className="chart-container" style={{ height:200 }}>
+          <div className="chart-container" style={{ height:'clamp(180px, 40vw, 220px)' }}>
             <Chart type="bar" data={customerData} options={customerOptions as Parameters<typeof Chart>[0]['options']} />
           </div>
         </div>
