@@ -13,7 +13,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [loginType, setLoginType] = useState<'user' | 'admin'>('user');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,14 +20,13 @@ export default function LoginPage() {
     setError('');
     try {
       const authUser = await login(email, password);
-      if (loginType === 'admin' && authUser.role !== 'admin') {
-        setError('This account does not have admin permissions. Please sign in as a user or use an admin account.');
-        setLoading(false);
-        return;
+      if (authUser.role === 'admin') {
+        router.push('/admin/users');
+      } else {
+        router.push('/dashboard');
       }
-      router.push(loginType === 'admin' ? '/admin/users' : '/dashboard');
     } catch (err: any) {
-      setError(err?.message || 'Invalid credentials. Please make sure the password matches and role permissions are set.');
+      setError(err?.message || 'Invalid credentials. Please check your email and password.');
     } finally {
       setLoading(false);
     }
@@ -36,7 +34,6 @@ export default function LoginPage() {
 
   return (
     <div className="auth-layout">
-      {/* Left Panel — hidden on mobile */}
       <div className="auth-panel-left">
         <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
         <div style={{ position: 'absolute', bottom: -80, left: -80, width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
@@ -55,7 +52,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right Panel — Form */}
       <div className="auth-panel-right">
         <div style={{ maxWidth: 420, width: '100%', margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
@@ -67,27 +63,7 @@ export default function LoginPage() {
           </div>
 
           <h1 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.5rem, 4vw, 1.875rem)', fontWeight: 800, marginBottom: 6 }}>Sign in</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: 24 }}>Don't have an account? <Link href="/auth/register" className="link">Create one free →</Link></p>
-
-          {/* Login Type Tabs */}
-          <div style={{ display: 'flex', gap: 8, marginBottom: 24, background: 'var(--bg-elevated)', padding: 4, borderRadius: 8 }}>
-            {(['user', 'admin'] as const).map(type => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setLoginType(type)}
-                style={{
-                  flex: 1, padding: '8px 12px', borderRadius: 6,
-                  fontSize: '0.875rem', fontWeight: 600,
-                  background: loginType === type ? (type === 'admin' ? 'var(--accent-danger)' : 'var(--accent-primary)') : 'transparent',
-                  color: loginType === type ? '#fff' : 'var(--text-secondary)',
-                  border: 'none', cursor: 'pointer', transition: 'all 0.2s ease'
-                }}
-              >
-                {type === 'user' ? '👤 User Login' : '🛡️ Admin Login'}
-              </button>
-            ))}
-          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: 24 }}>Don&apos;t have an account? <Link href="/auth/register" className="link">Create one free &rarr;</Link></p>
 
           {error && <div style={{ background: 'rgba(var(--accent-danger-rgb),0.1)', border: '1px solid var(--accent-danger)', borderRadius: 10, padding: '12px 16px', color: 'var(--accent-danger)', fontSize: '0.875rem', marginBottom: 20 }}>⚠️ {error}</div>}
 
@@ -103,8 +79,8 @@ export default function LoginPage() {
               </div>
               <input className="input" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required autoComplete="current-password" />
             </div>
-            <button type="submit" className="btn btn-primary btn-lg btn-full" style={{ marginTop: 4, background: loginType === 'admin' ? 'var(--accent-danger)' : 'var(--accent-primary)' }} disabled={loading}>
-              {loading ? 'Signing in...' : loginType === 'admin' ? 'Sign In as Admin →' : 'Sign In as User →'}
+            <button type="submit" className="btn btn-primary btn-lg btn-full" style={{ marginTop: 4 }} disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
 
