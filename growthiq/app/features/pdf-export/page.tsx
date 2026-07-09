@@ -350,7 +350,18 @@ export default function PdfExportPage() {
 
       setStatus('Downloading...');
       const bizName = (user?.businessData?.business_name || 'Business').replace(/\s+/g, '_');
-      pdf.save(`GrowthIQ_Report_${bizName}_${new Date().toISOString().slice(0,10)}.pdf`);
+      const filename = `GrowthIQ_Report_${bizName}_${new Date().toISOString().slice(0,10)}.pdf`;
+
+      // Use Blob-URL download to prevent mobile browsers from triggering "Open PDF?" navigation popups
+      const blob = pdf.output('blob');
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
 
     } catch (err: any) {
       console.error('PDF generation error:', err);
