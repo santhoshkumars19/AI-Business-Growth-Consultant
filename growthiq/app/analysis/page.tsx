@@ -122,18 +122,6 @@ export default function AnalysisPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-base)' }}>
-      {/* Top bar */}
-      <div style={{ background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)', padding: '0 16px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50, gap: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 26, height: 26, borderRadius: 6, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>⚡</div>
-          <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1rem' }}>GrowthIQ <span style={{ color: 'var(--accent-primary)' }}>AI</span></span>
-          <span className="hide-mobile" style={{ color: 'var(--border)', margin: '0 4px' }}>|</span>
-          <span className="hide-mobile" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>AI Analysis Report</span>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Link href="/dashboard" className="btn btn-primary btn-sm">Dashboard →</Link>
-        </div>
-      </div>
 
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: 'clamp(16px, 3vw, 32px) clamp(12px, 3vw, 24px)' }}>
         {/* Hero Score */}
