@@ -15,7 +15,6 @@ const navItems = [
   { href: '/features/competitor-analysis', icon: '⚔️', label: 'Competitors' },
   { href: '/features/content-calendar', icon: '📱', label: 'Content Calendar' },
   { href: '/features/budget-estimator', icon: '💰', label: 'Budget Estimator' },
-  { href: '/features/business-search', icon: '🔍', label: 'Business Search' },
   { href: '/progress', icon: '📉', label: 'Progress Tracking' },
 ];
 
