@@ -74,33 +74,30 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
     <div id="pdf-content" style={{ width:794, background:'#FFFFFF', color:'#1E293B', fontFamily:'Arial, Helvetica, sans-serif', padding:0, margin:0 }}>
 
       {/* ── Cover Page ─────────────────────────────── */}
-      <div style={{ minHeight:1123, background:'linear-gradient(135deg, #6366F1 0%, #4F46E5 40%, #7C3AED 100%)', display:'flex', flexDirection:'column', padding:'60px 56px', boxSizing:'border-box', position:'relative', overflow:'hidden' }}>
-        {/* decorative circles */}
-        <div style={{ position:'absolute', top:-80, right:-80, width:320, height:320, borderRadius:'50%', background:'rgba(255,255,255,0.06)' }} />
-        <div style={{ position:'absolute', bottom:-60, left:-60, width:240, height:240, borderRadius:'50%', background:'rgba(255,255,255,0.06)' }} />
+      <div style={{ minHeight:1123, background:'#FFFFFF', display:'flex', flexDirection:'column', padding:'60px 56px', boxSizing:'border-box', position:'relative', overflow:'hidden', borderBottom:'1px solid #E2E8F0' }}>
 
         <div style={{ marginBottom:'auto' }}>
           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:60 }}>
-            <div style={{ width:36, height:36, borderRadius:9, background:'rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>⚡</div>
-            <span style={{ color:'rgba(255,255,255,0.9)', fontWeight:800, fontSize:16, letterSpacing:'0.02em' }}>GrowthIQ AI</span>
+            <div style={{ width:36, height:36, borderRadius:9, background:'rgba(99,102,241,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:'#6366F1', fontWeight:'bold' }}>■</div>
+            <span style={{ color:'#6366F1', fontWeight:800, fontSize:16, letterSpacing:'0.02em' }}>GrowthIQ AI</span>
           </div>
-          <div style={{ display:'inline-block', background:'rgba(255,255,255,0.15)', borderRadius:99, padding:'5px 16px', fontSize:11, color:'rgba(255,255,255,0.85)', fontWeight:600, marginBottom:20, letterSpacing:'0.06em' }}>BUSINESS ANALYSIS REPORT</div>
-          <h1 style={{ fontFamily:'Georgia, serif', fontSize:34, fontWeight:700, color:'#FFFFFF', lineHeight:1.25, margin:'0 0 12px 0' }}>
+          <div style={{ display:'inline-block', background:'rgba(99,102,241,0.08)', border:'1px solid rgba(99,102,241,0.2)', borderRadius:99, padding:'5px 16px', fontSize:11, color:'#6366F1', fontWeight:600, marginBottom:20, letterSpacing:'0.06em' }}>BUSINESS ANALYSIS REPORT</div>
+          <h1 style={{ fontFamily:'Georgia, serif', fontSize:34, fontWeight:700, color:'#0F172A', lineHeight:1.25, margin:'0 0 12px 0' }}>
             {biz?.business_name || 'Your Business'}<br />
-            <span style={{ fontWeight:400, fontSize:22 }}>Growth Intelligence Report</span>
+            <span style={{ fontWeight:400, fontSize:22, color:'#6366F1' }}>Growth Intelligence Report</span>
           </h1>
-          <p style={{ color:'rgba(255,255,255,0.7)', fontSize:13, margin:'0 0 40px 0' }}>
+          <p style={{ color:'#64748B', fontSize:13, margin:'0 0 40px 0' }}>
             {biz?.industry} · {biz?.city}, {biz?.state} · Generated {date}
           </p>
         </div>
 
         {/* Health Score on cover */}
-        <div style={{ display:'flex', alignItems:'center', gap:32, background:'rgba(255,255,255,0.12)', borderRadius:16, padding:'24px 32px', border:'1px solid rgba(255,255,255,0.2)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:32, background:'#F8FAFC', borderRadius:16, padding:'24px 32px', border:'1px solid #E2E8F0' }}>
           <div style={{ textAlign:'center' }}>
-            <div style={{ fontFamily:'monospace', fontSize:52, fontWeight:800, color:'#FFFFFF', lineHeight:1 }}>{analysis.health_score}</div>
-            <div style={{ fontSize:11, color:'rgba(255,255,255,0.7)', marginTop:4 }}>Health Score / 100</div>
+            <div style={{ fontFamily:'monospace', fontSize:52, fontWeight:800, color:sc, lineHeight:1 }}>{analysis.health_score}</div>
+            <div style={{ fontSize:11, color:'#64748B', marginTop:4 }}>Health Score / 100</div>
           </div>
-          <div style={{ width:1, height:70, background:'rgba(255,255,255,0.2)' }} />
+          <div style={{ width:1, height:70, background:'#E2E8F0' }} />
           <div style={{ display:'flex', flexDirection:'column', gap:10, flex:1 }}>
             {[
               ['Monthly Revenue', `₹${(biz?.monthly_revenue||0).toLocaleString('en-IN')}`],
@@ -109,14 +106,14 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
               ['Team Size', `${biz?.employee_count||1} employees`],
             ].map(([k,v]) => (
               <div key={k} style={{ display:'flex', justifyContent:'space-between', fontSize:12 }}>
-                <span style={{ color:'rgba(255,255,255,0.65)' }}>{k}</span>
-                <span style={{ color:'#FFFFFF', fontWeight:700 }}>{v}</span>
+                <span style={{ color:'#64748B' }}>{k}</span>
+                <span style={{ color:'#0F172A', fontWeight:700 }}>{v}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div style={{ marginTop:40, fontSize:10, color:'rgba(255,255,255,0.4)', textAlign:'center' }}>
+        <div style={{ marginTop:40, fontSize:10, color:'#94A3B8', textAlign:'center' }}>
           Confidential · Powered by Gemini AI · GrowthIQ AI Platform · {new Date().getFullYear()}
         </div>
       </div>
@@ -249,23 +246,6 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
         )}
       </div>
 
-      {/* ── Footer page ─────────────────────────────── */}
-      <div style={{ padding:'40px 56px', background:'#1E293B', boxSizing:'border-box' }}>
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', paddingBottom:24, borderBottom:'1px solid rgba(255,255,255,0.12)', marginBottom:20 }}>
-          <div>
-            <div style={{ fontWeight:800, fontSize:16, color:'#FFFFFF', marginBottom:4 }}>GrowthIQ AI</div>
-            <div style={{ fontSize:11, color:'rgba(255,255,255,0.5)' }}>AI-Powered Business Growth Platform</div>
-          </div>
-          <div style={{ textAlign:'right', fontSize:10, color:'rgba(255,255,255,0.4)' }}>
-            <div>Generated: {date}</div>
-            <div>Business: {biz?.business_name || '—'}</div>
-            <div>Health Score: {analysis.health_score}/100</div>
-          </div>
-        </div>
-        <p style={{ fontSize:10, color:'rgba(255,255,255,0.35)', lineHeight:1.7, margin:0 }}>
-          This report was generated by GrowthIQ AI using Gemini AI models. All analysis, recommendations, and forecasts are based on the data you provided and are intended for strategic planning purposes only. They do not constitute financial, legal, or professional advice. GrowthIQ AI makes no guarantees regarding business outcomes. © {new Date().getFullYear()} GrowthIQ AI. All rights reserved.
-        </p>
-      </div>
     </div>
   );
 }
