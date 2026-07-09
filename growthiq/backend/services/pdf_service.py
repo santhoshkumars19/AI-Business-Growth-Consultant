@@ -15,6 +15,7 @@ BRAND_PURPLE = colors.HexColor("#6366F1")
 BRAND_DARK   = colors.HexColor("#0F1117")
 SUCCESS      = colors.HexColor("#10B981")
 WARNING      = colors.HexColor("#F59E0B")
+DANGER       = colors.HexColor("#EF4444")
 LIGHT_BG     = colors.HexColor("#F8F9FF")
 
 
@@ -43,26 +44,23 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
     body_style = ParagraphStyle("Body", parent=styles["Normal"],
         fontName="Helvetica", fontSize=10, leading=16, textColor=colors.HexColor("#374151"))
 
-    label_style = ParagraphStyle("Label", parent=styles["Normal"],
-        fontName="Helvetica-Bold", fontSize=9, textColor=colors.HexColor("#6B7280"),
-        spaceAfter=2)
-
     # ── Header ───────────────────────────────────────────────────────────────
-    story.append(Paragraph("⚡ GrowthIQ AI", ParagraphStyle("Brand",
+    story.append(Paragraph("■ GrowthIQ AI", ParagraphStyle("Brand",
         fontName="Helvetica-Bold", fontSize=12, textColor=BRAND_PURPLE, alignment=TA_CENTER)))
     story.append(Spacer(1, 0.3*cm))
-    story.append(Paragraph(f"Business Growth Report", title_style))
-    story.append(Paragraph(f"{business.get('business_name', 'N/A')} · {business.get('city', '')} · Generated {datetime.now().strftime('%d %B %Y')}", 
+    story.append(Paragraph("Business Growth Report", title_style))
+    story.append(Paragraph(f"{business.get('industry', business.get('business_name', 'N/A'))} · {business.get('city', '')} · Generated {datetime.now().strftime('%d %B %Y')}", 
         ParagraphStyle("Sub", fontName="Helvetica", fontSize=10, textColor=colors.grey, alignment=TA_CENTER)))
     story.append(HRFlowable(width="100%", thickness=2, color=BRAND_PURPLE, spaceAfter=16))
 
     # ── Health Score ─────────────────────────────────────────────────────────
     health_score = analysis.get("health_score", 0)
-    score_color = SUCCESS if health_score >= 70 else WARNING if health_score >= 50 else colors.red
+    score_color = SUCCESS if health_score >= 70 else WARNING if health_score >= 50 else DANGER
+    score_hex = f"#{score_color.hexval()}"
     story.append(Paragraph("Business Health Score", h2_style))
 
     score_data = [
-        [Paragraph(f'<font size="36" color="{score_color.hexval() if hasattr(score_color, "hexval") else "#10B981"}">{health_score}</font>', 
+        [Paragraph(f'<font color="{score_hex}">{health_score}</font>', 
             ParagraphStyle("Score", fontName="Helvetica-Bold", fontSize=36, alignment=TA_CENTER)),
          Paragraph(analysis.get("summary", ""), body_style)]
     ]
@@ -71,8 +69,13 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
         ("ALIGN", (0, 0), (0, 0), "CENTER"),
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ("BACKGROUND", (0, 0), (0, 0), LIGHT_BG),
-        ("ROUNDEDCORNERS", [8]),
+        ("BACKGROUND", (1, 0), (1, 0), colors.white),
         ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#E5E7EB")),
+        ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#E5E7EB")),
+        ("TOPPADDING", (0, 0), (-1, -1), 12),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
+        ("LEFTPADDING", (0, 0), (-1, -1), 12),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 12),
     ]))
     story.append(score_table)
     story.append(Spacer(1, 0.5*cm))
@@ -81,10 +84,10 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
     story.append(Paragraph("Key Business Metrics", h2_style))
     metrics_data = [
         ["Metric", "Value"],
-        ["Monthly Revenue", f"₹{business.get('monthly_revenue', 0):,.0f}"],
-        ["Monthly Expenses", f"₹{business.get('monthly_expenses', 0):,.0f}"],
+        ["Monthly Revenue", f"■{business.get('monthly_revenue', 0):,.0f}"],
+        ["Monthly Expenses", f"■{business.get('monthly_expenses', 0):,.0f}"],
         ["Monthly Customers", str(business.get('monthly_customers', 0))],
-        ["Avg Order Value", f"₹{business.get('avg_order_value', 0):,.0f}"],
+        ["Avg Order Value", f"■{business.get('avg_order_value', 0):,.0f}"],
         ["Profit Margin", f"{business.get('profit_margin', 0)}%"],
         ["Growth Rate", f"{business.get('growth_rate', 0)}%"],
         ["Online Presence", business.get('online_presence', 'N/A').title()],
@@ -98,10 +101,12 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
         ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, LIGHT_BG]),
         ("FONTSIZE", (0, 1), (-1, -1), 10),
         ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#E5E7EB")),
+        ("ALIGN", (0, 0), (0, -1), "LEFT"),
         ("ALIGN", (1, 0), (1, -1), "RIGHT"),
         ("TOPPADDING", (0, 0), (-1, -1), 8),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
         ("LEFTPADDING", (0, 0), (-1, -1), 12),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 12),
     ]))
     story.append(metrics_table)
     story.append(Spacer(1, 0.5*cm))
@@ -158,3 +163,4 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
     doc.build(story)
     buffer.seek(0)
     return buffer
+
