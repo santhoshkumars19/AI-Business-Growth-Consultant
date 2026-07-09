@@ -113,7 +113,7 @@ export default function ContentCalendarPage() {
       </div>
 
       {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
+      <div className="grid-4" style={{ marginBottom: 20, gap: 12 }}>
         {[['📝', 'Total Posts', filtered.length], ['✅', 'Approved', filtered.filter(p => p.approved).length], ['⏳', 'Pending', filtered.filter(p => !p.approved).length], ['📅', 'Days Covered', new Set(filtered.map(p => p.day)).size]].map(([icon, label, val]) => (
           <div key={String(label)} style={{ padding: '12px 16px', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, textAlign: 'center' }}>
             <div style={{ fontSize: '1.25rem', marginBottom: 4 }}>{icon}</div>
@@ -123,7 +123,7 @@ export default function ContentCalendarPage() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: selectedPost ? '1fr 380px' : '1fr', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: selectedPost ? 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))' : '1fr', gap: 20 }}>
         {view === 'month' ? (
           <div className="card p-4">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2, marginBottom: 4 }}>

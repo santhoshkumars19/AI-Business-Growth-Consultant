@@ -1123,3 +1123,9 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   .mobile-nav { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
   .auth-panel-right { padding-left: max(24px, env(safe-area-inset-left)); padding-right: max(24px, env(safe-area-inset-right)); }
 }
+
+@media (max-width: 767px) {
+  .page-content {
+    padding-bottom: 90px !important;
+  }
+}

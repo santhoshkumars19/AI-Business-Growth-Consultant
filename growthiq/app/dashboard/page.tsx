@@ -251,16 +251,15 @@ export default function DashboardPage() {
             <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>Updated live</span>
           </div>
           {analysis ? (
-            <div style={{ display:'flex', alignItems:'center', gap:24 }}>
-              <div style={{ position:'relative', width:130, height:130, flexShrink:0 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:24, flexWrap:'wrap' }}>
+              <div style={{ position:'relative', width:130, height:130, flexShrink:0, margin:'0 auto' }}>
                 <Doughnut data={gaugeData} options={gaugeOptions} />
                 <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
                   <div style={{ fontFamily:'JetBrains Mono', fontSize:'2rem', fontWeight:700, color:scoreColor, lineHeight:1 }}>{score}</div>
                   <div style={{ fontSize:'0.65rem', color:'var(--text-muted)' }}>/ 100</div>
                 </div>
               </div>
-              <div style={{ flex:1 }}>
-                <div className="badge badge-success" style={{ marginBottom:10, background: scoreColor, color: '#fff' }}>{labelText}</div>
+              <div style={{ flex:1, minWidth:200 }}>
                 {Object.entries(analysis.score_breakdown || {}).map(([lbl, scoreVal]) => (
                   <div key={lbl} style={{ marginBottom:8 }}>
                     <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.78rem', marginBottom:3 }}>
