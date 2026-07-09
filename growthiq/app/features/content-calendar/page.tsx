@@ -70,6 +70,10 @@ export default function ContentCalendarPage() {
   const [view, setView] = useState<'month' | 'list'>('month');
   const [activePlatform, setActivePlatform] = useState('All');
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editCaption, setEditCaption] = useState('');
+  const [editHashtags, setEditHashtags] = useState('');
+
   useEffect(() => {
     const list = getPostsForIndustry(userIndustry, userBusinessName);
     setPosts(list);
@@ -78,11 +82,26 @@ export default function ContentCalendarPage() {
     }
   }, [userIndustry, userBusinessName]);
 
+  useEffect(() => {
+    if (selectedPost) {
+      setEditCaption(selectedPost.caption);
+      setEditHashtags(selectedPost.hashtags);
+    }
+    setIsEditing(false);
+  }, [selectedPost]);
+
   const toggleApprove = (id: number) => {
     setPosts(prev => prev.map(p => p.id === id ? { ...p, approved: !p.approved } : p));
     if (selectedPost?.id === id) {
       setSelectedPost(prev => prev ? { ...prev, approved: !prev.approved } : null);
     }
+  };
+
+  const handleSaveEdit = () => {
+    if (!selectedPost) return;
+    setPosts(prev => prev.map(p => p.id === selectedPost.id ? { ...p, caption: editCaption, hashtags: editHashtags } : p));
+    setSelectedPost(prev => prev ? { ...prev, caption: editCaption, hashtags: editHashtags } : null);
+    setIsEditing(false);
   };
 
   const days = Array.from({ length: 30 }, (_, i) => i + 1);
@@ -101,7 +120,6 @@ export default function ContentCalendarPage() {
           {(['month', 'list'] as const).map(v => (
             <button key={v} onClick={() => setView(v)} className="btn btn-sm" style={{ background: view === v ? 'var(--accent-primary)' : 'var(--bg-elevated)', color: view === v ? '#fff' : 'var(--text-secondary)', textTransform: 'capitalize' }}>{v}</button>
           ))}
-          <button className="btn btn-primary btn-sm">🤖 Generate August Plan</button>
         </div>
       </div>
 
@@ -174,20 +192,48 @@ export default function ContentCalendarPage() {
               <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: platformColors[selectedPost.platform], color: '#fff' }}>{selectedPost.platform}</span>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', padding: '3px 10px', background: 'var(--bg-elevated)', borderRadius: 99 }}>July {selectedPost.day} · {selectedPost.time}</span>
             </div>
-            <div style={{ background: 'var(--bg-elevated)', borderRadius: 12, padding: '14px 16px', marginBottom: 14 }}>
-              <p style={{ fontSize: '0.875rem', lineHeight: 1.7, marginBottom: 10 }}>{selectedPost.caption}</p>
-              <p style={{ fontSize: '0.78rem', color: platformColors[selectedPost.platform], lineHeight: 1.8 }}>{selectedPost.hashtags}</p>
-            </div>
+            {isEditing ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
+                <textarea
+                  className="input"
+                  rows={4}
+                  style={{ resize: 'vertical', width: '100%' }}
+                  value={editCaption}
+                  onChange={e => setEditCaption(e.target.value)}
+                  placeholder="Post Caption"
+                />
+                <input
+                  type="text"
+                  className="input"
+                  style={{ width: '100%' }}
+                  value={editHashtags}
+                  onChange={e => setEditHashtags(e.target.value)}
+                  placeholder="#Hashtags"
+                />
+              </div>
+            ) : (
+              <div style={{ background: 'var(--bg-elevated)', borderRadius: 12, padding: '14px 16px', marginBottom: 14 }}>
+                <p style={{ fontSize: '0.875rem', lineHeight: 1.7, marginBottom: 10 }}>{selectedPost.caption}</p>
+                <p style={{ fontSize: '0.78rem', color: platformColors[selectedPost.platform], lineHeight: 1.8 }}>{selectedPost.hashtags}</p>
+              </div>
+            )}
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
               <div style={{ padding: '8px 12px', background: 'rgba(var(--accent-primary-rgb),0.08)', borderRadius: 8, fontSize: '0.78rem' }}>⏰ {selectedPost.time}</div>
               <div style={{ padding: '8px 12px', background: 'rgba(var(--accent-success-rgb),0.08)', borderRadius: 8, fontSize: '0.78rem' }}>📊 {selectedPost.type}</div>
             </div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => toggleApprove(selectedPost.id)} className={`btn ${selectedPost.approved ? 'btn-ghost' : 'btn-primary'} btn-sm`} style={{ flex: 1 }}>
-                {selectedPost.approved ? '↩ Unapprove' : '✅ Approve'}
-              </button>
-              <button className="btn btn-ghost btn-sm" style={{ flex: 1 }}>✏️ Edit</button>
-            </div>
+            {isEditing ? (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={handleSaveEdit} className="btn btn-primary btn-sm" style={{ flex: 1 }}>💾 Save</button>
+                <button onClick={() => setIsEditing(false)} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>❌ Cancel</button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => toggleApprove(selectedPost.id)} className={`btn ${selectedPost.approved ? 'btn-ghost' : 'btn-primary'} btn-sm`} style={{ flex: 1 }}>
+                  {selectedPost.approved ? '↩ Unapprove' : '✅ Approve'}
+                </button>
+                <button onClick={() => setIsEditing(true)} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>✏️ Edit</button>
+              </div>
+            )}
           </div>
         )}
       </div>
