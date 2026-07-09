@@ -191,36 +191,6 @@ export default function AnalysisPage() {
             </div>
           </div>
 
-          {/* SWOT Overview */}
-          <div className="card p-6" style={{ gridColumn: 'span 2' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>💪 SWOT Analysis</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-              <div>
-                <h4 style={{ color: 'var(--accent-success)', fontSize: '0.9rem', fontWeight: 700, marginBottom: 8 }}>Strengths</h4>
-                <ul style={{ paddingLeft: 16, fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {analysis.swot?.strengths?.map((s, i) => <li key={i}>{s}</li>)}
-                </ul>
-              </div>
-              <div>
-                <h4 style={{ color: 'var(--accent-danger)', fontSize: '0.9rem', fontWeight: 700, marginBottom: 8 }}>Weaknesses</h4>
-                <ul style={{ paddingLeft: 16, fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {analysis.swot?.weaknesses?.map((w, i) => <li key={i}>{w}</li>)}
-                </ul>
-              </div>
-              <div>
-                <h4 style={{ color: 'var(--accent-primary)', fontSize: '0.9rem', fontWeight: 700, marginBottom: 8 }}>Opportunities</h4>
-                <ul style={{ paddingLeft: 16, fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {analysis.swot?.opportunities?.map((o, i) => <li key={i}>{o}</li>)}
-                </ul>
-              </div>
-              <div>
-                <h4 style={{ color: 'var(--accent-warning)', fontSize: '0.9rem', fontWeight: 700, marginBottom: 8 }}>Threats</h4>
-                <ul style={{ paddingLeft: 16, fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {analysis.swot?.threats?.map((t, i) => <li key={i}>{t}</li>)}
-                </ul>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Recommendations */}
