@@ -66,7 +66,7 @@ export default function MarketingPlanPage() {
         ))}
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns: selectedDay ? '1fr 360px' : '1fr', gap:20 }}>
+      <div style={{ display:'grid', gridTemplateColumns: selectedDay ? 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))' : '1fr', gap:20 }}>
         {/* Calendar */}
         <div className="card p-4">
           {/* Week headers */}
