@@ -130,14 +130,14 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
     story.append(Paragraph("SWOT Analysis", h2_style))
     swot = analysis.get("swot", {})
     swot_data = [
-        [Paragraph("💪 Strengths", ParagraphStyle("SW", fontName="Helvetica-Bold", fontSize=10, textColor=SUCCESS)),
-         Paragraph("⚠️ Weaknesses", ParagraphStyle("SW", fontName="Helvetica-Bold", fontSize=10, textColor=colors.red))],
-        [Paragraph("\n".join(f"• {s}" for s in swot.get("strengths", [])), body_style),
-         Paragraph("\n".join(f"• {w}" for w in swot.get("weaknesses", [])), body_style)],
-        [Paragraph("🚀 Opportunities", ParagraphStyle("SW", fontName="Helvetica-Bold", fontSize=10, textColor=BRAND_PURPLE)),
-         Paragraph("🛑 Threats", ParagraphStyle("SW", fontName="Helvetica-Bold", fontSize=10, textColor=WARNING))],
-        [Paragraph("\n".join(f"• {o}" for o in swot.get("opportunities", [])), body_style),
-         Paragraph("\n".join(f"• {t}" for t in swot.get("threats", [])), body_style)],
+        [Paragraph("■ Strengths", ParagraphStyle("SW", fontName="Helvetica-Bold", fontSize=10, textColor=SUCCESS)),
+         Paragraph("■ Weaknesses", ParagraphStyle("SW", fontName="Helvetica-Bold", fontSize=10, textColor=DANGER))],
+        [Paragraph("<br/>".join(f"• {s}" for s in swot.get("strengths", [])), body_style),
+         Paragraph("<br/>".join(f"• {w}" for w in swot.get("weaknesses", [])), body_style)],
+        [Paragraph("■ Opportunities", ParagraphStyle("SW", fontName="Helvetica-Bold", fontSize=10, textColor=BRAND_PURPLE)),
+         Paragraph("■ Threats", ParagraphStyle("SW", fontName="Helvetica-Bold", fontSize=10, textColor=WARNING))],
+        [Paragraph("<br/>".join(f"• {o}" for o in swot.get("opportunities", [])), body_style),
+         Paragraph("<br/>".join(f"• {t}" for t in swot.get("threats", [])), body_style)],
     ]
     swot_table = Table(swot_data, colWidths=[8*cm, 8*cm])
     swot_table.setStyle(TableStyle([
