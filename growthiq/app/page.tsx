@@ -148,18 +148,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── CTA BANNER ── */}
-      <section className="section">
-        <div className="container">
-          <div style={{ background: 'var(--gradient-hero)', borderRadius: 'var(--radius-xl)', padding: 'clamp(32px, 5vw, 64px)', textAlign: 'center' }}>
-            <h2 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: 800, color: '#fff', marginBottom: 14 }}>Ready to grow your business?</h2>
-            <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 'clamp(0.875rem, 2vw, 1.05rem)', marginBottom: 28, maxWidth: 480, margin: '0 auto 28px' }}>Join thousands of entrepreneurs making smarter decisions with AI.</p>
-            <Link href="/auth/register" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', color: 'var(--accent-primary)', padding: 'clamp(12px, 2vw, 18px) clamp(24px, 4vw, 40px)', borderRadius: 'var(--radius-full)', fontWeight: 700, fontSize: 'clamp(0.9rem, 2vw, 1.05rem)', boxShadow: '0 8px 30px rgba(0,0,0,0.2)', transition: 'transform 0.2s ease' }}>
-              🚀 Start For Free
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* ── FOOTER ── */}
       <footer style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border)', padding: '32px 0' }}>
