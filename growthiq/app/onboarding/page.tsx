@@ -184,7 +184,7 @@ export default function OnboardingPage() {
                 {errors.industry && <div className="error-msg">{errors.industry}</div>}
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+            <div className="grid-2" style={{ gap: 16 }}>
               <div className="input-group">
                 <label className="input-label">Monthly Revenue (₹) *</label>
                 <input className={`input ${errors.monthlyRevenue ? 'input-error' : ''}`} type="number" placeholder="e.g. 250000" value={form.monthlyRevenue} onChange={e => set('monthlyRevenue', e.target.value)} min="0" />
@@ -198,7 +198,7 @@ export default function OnboardingPage() {
                 {errors.monthlyExpenses && <div className="error-msg">{errors.monthlyExpenses}</div>}
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+            <div className="grid-2" style={{ gap: 16 }}>
               <div className="input-group">
                 <label className="input-label">Active Customers *</label>
                 <input className={`input ${errors.customers ? 'input-error' : ''}`} type="number" placeholder="e.g. 165" value={form.customers} onChange={e => set('customers', e.target.value)} min="0" />
