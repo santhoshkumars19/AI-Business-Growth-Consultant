@@ -39,7 +39,6 @@ export default function MarketingPlanPage() {
           {(['month','week'] as const).map(v=>(
             <button key={v} onClick={()=>setView(v)} className="btn btn-sm" style={{ background:view===v?'var(--accent-primary)':'var(--bg-elevated)', color:view===v?'#fff':'var(--text-secondary)', textTransform:'capitalize' }}>{v} View</button>
           ))}
-          <button className="btn btn-primary btn-sm" onClick={()=>window.print()}>📄 Download PDF</button>
         </div>
       </div>
 
