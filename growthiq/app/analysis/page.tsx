@@ -83,24 +83,13 @@ export default function AnalysisPage() {
     }
   }, [user]);
 
+
   const handleDownloadPDF = async () => {
-    if (isDownloading) return;
-    setIsDownloading(true);
-    try {
-      const blob = await fetchWithAuth('/reports/pdf', { method: 'POST' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `GrowthIQ_Report_${biz?.business_name || 'business'}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (err: any) {
-      alert(`PDF Download failed: ${err.message || err}`);
-    } finally {
-      setIsDownloading(false);
-    }
+    // Redirect to the dedicated PDF export page which handles
+    // client-side PDF generation via html2canvas + jsPDF
+    window.location.href = '/features/pdf-export';
   };
+
 
   if (loading) {
     return (
