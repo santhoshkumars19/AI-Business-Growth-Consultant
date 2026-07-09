@@ -105,7 +105,7 @@ export default function ContactPage() {
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div className="input-group">
                   <label className="input-label">Full Name</label>
-                  <input className="input" value={name} onChange={e => setName(e.target.value)} required placeholder="Priya Sharma" />
+                  <input className="input" value={name} onChange={e => setName(e.target.value)} required placeholder="Enter your full name" />
                 </div>
                 <div className="input-group">
                   <label className="input-label">Email Address</label>

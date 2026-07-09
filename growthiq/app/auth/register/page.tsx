@@ -103,7 +103,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div className="input-group">
               <label className="input-label">Full Name</label>
-              <input className="input" type="text" placeholder="Priya Sharma" value={form.name} onChange={e => set('name', e.target.value)} required />
+              <input className="input" type="text" placeholder="Enter your full name" value={form.name} onChange={e => set('name', e.target.value)} required />
             </div>
             <div className="input-group">
               <label className="input-label">Email address</label>
