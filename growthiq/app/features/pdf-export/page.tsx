@@ -76,44 +76,48 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
       {/* ── Cover Page ─────────────────────────────── */}
       <div style={{ minHeight:1123, background:'#FFFFFF', display:'flex', flexDirection:'column', padding:'60px 56px', boxSizing:'border-box', position:'relative', overflow:'hidden', borderBottom:'1px solid #E2E8F0' }}>
 
-        <div style={{ marginBottom: 40 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:60 }}>
-            <div style={{ width:36, height:36, borderRadius:9, background:'rgba(99,102,241,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:'#6366F1', fontWeight:'bold' }}>■</div>
-            <span style={{ color:'#6366F1', fontWeight:800, fontSize:16, letterSpacing:'0.02em' }}>GrowthIQ AI</span>
-          </div>
-          <div style={{ display:'inline-block', background:'rgba(99,102,241,0.08)', border:'1px solid rgba(99,102,241,0.2)', borderRadius:99, padding:'5px 16px', fontSize:11, color:'#6366F1', fontWeight:600, marginBottom:20, letterSpacing:'0.06em' }}>BUSINESS ANALYSIS REPORT</div>
-          <h1 style={{ fontFamily:'Georgia, serif', fontSize:34, fontWeight:700, color:'#0F172A', lineHeight:1.25, margin:'0 0 12px 0' }}>
-            {biz?.business_name || 'Your Business'}<br />
-            <span style={{ fontWeight:400, fontSize:22, color:'#6366F1' }}>Growth Intelligence Report</span>
-          </h1>
-          <p style={{ color:'#64748B', fontSize:13, margin:'0 0 40px 0' }}>
-            {biz?.industry} · {biz?.city}, {biz?.state} · Generated {date}
-          </p>
+        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:40 }}>
+          <div style={{ width:36, height:36, borderRadius:9, background:'rgba(99,102,241,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:'#6366F1', fontWeight:'bold' }}>■</div>
+          <span style={{ color:'#6366F1', fontWeight:800, fontSize:16, letterSpacing:'0.02em' }}>GrowthIQ AI</span>
         </div>
 
-        {/* Health Score on cover */}
-        <div style={{ display:'flex', alignItems:'center', gap:32, background:'#F8FAFC', borderRadius:16, padding:'24px 32px', border:'1px solid #E2E8F0', marginBottom: 20 }}>
-          <div style={{ textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minWidth:90 }}>
-            <div style={{ fontSize:44, fontWeight:800, color:sc, lineHeight:1.1 }}>{analysis.health_score}</div>
-            <div style={{ fontSize:11, color:'#64748B', marginTop:4 }}>Health Score / 100</div>
+        {/* Centered Main Block to distribute whitespace beautifully */}
+        <div style={{ flex:1, display:'flex', flexDirection:'column', justifyContent:'center', gap:40, marginBottom:40 }}>
+          <div>
+            <div style={{ display:'inline-block', background:'rgba(99,102,241,0.08)', border:'1px solid rgba(99,102,241,0.2)', borderRadius:99, padding:'5px 16px', fontSize:11, color:'#6366F1', fontWeight:600, marginBottom:20, letterSpacing:'0.06em' }}>BUSINESS ANALYSIS REPORT</div>
+            <h1 style={{ fontFamily:'Georgia, serif', fontSize:34, fontWeight:700, color:'#0F172A', lineHeight:1.25, margin:'0 0 12px 0' }}>
+              {biz?.business_name || 'Your Business'}<br />
+              <span style={{ fontWeight:400, fontSize:22, color:'#6366F1' }}>Growth Intelligence Report</span>
+            </h1>
+            <p style={{ color:'#64748B', fontSize:13, margin:0 }}>
+              {biz?.industry} · {biz?.city}, {biz?.state} · Generated {date}
+            </p>
           </div>
-          <div style={{ width:1, height:70, background:'#E2E8F0' }} />
-          <div style={{ display:'flex', flexDirection:'column', gap:10, flex:1 }}>
-            {[
-              ['Monthly Revenue', `₹${(biz?.monthly_revenue||0).toLocaleString('en-IN')}`],
-              ['Net Profit Margin', `${margin}%`],
-              ['Active Customers', `${biz?.monthly_customers||0}`],
-              ['Team Size', `${biz?.employee_count||1} employees`],
-            ].map(([k,v]) => (
-              <div key={k} style={{ display:'flex', justifyContent:'space-between', fontSize:12 }}>
-                <span style={{ color:'#64748B' }}>{k}</span>
-                <span style={{ color:'#0F172A', fontWeight:700 }}>{v}</span>
-              </div>
-            ))}
+
+          {/* Health Score on cover */}
+          <div style={{ display:'flex', alignItems:'center', gap:32, background:'#F8FAFC', borderRadius:16, padding:'24px 32px', border:'1px solid #E2E8F0' }}>
+            <div style={{ textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minWidth:90 }}>
+              <div style={{ fontSize:44, fontWeight:800, color:sc, lineHeight:1.1 }}>{analysis.health_score}</div>
+              <div style={{ fontSize:11, color:'#64748B', marginTop:4 }}>Health Score / 100</div>
+            </div>
+            <div style={{ width:1, height:70, background:'#E2E8F0' }} />
+            <div style={{ display:'flex', flexDirection:'column', gap:10, flex:1 }}>
+              {[
+                ['Monthly Revenue', `₹${(biz?.monthly_revenue||0).toLocaleString('en-IN')}`],
+                ['Net Profit Margin', `${margin}%`],
+                ['Active Customers', `${biz?.monthly_customers||0}`],
+                ['Team Size', `${biz?.employee_count||1} employees`],
+              ].map(([k,v]) => (
+                <div key={k} style={{ display:'flex', justifyContent:'space-between', fontSize:12 }}>
+                  <span style={{ color:'#64748B' }}>{k}</span>
+                  <span style={{ color:'#0F172A', fontWeight:700 }}>{v}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div style={{ marginTop:'auto', fontSize:10, color:'#94A3B8', textAlign:'center' }}>
+        <div style={{ fontSize:10, color:'#94A3B8', textAlign:'center' }}>
           Confidential · Powered by Gemini AI · GrowthIQ AI Platform · {new Date().getFullYear()}
         </div>
       </div>
@@ -307,46 +311,36 @@ export default function PdfExportPage() {
       const A4_W = 794;
       const A4_H = 1123;
 
-      const canvas = await html2canvas(el, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        width: A4_W,
-        windowWidth: A4_W,
-        logging: false,
-        onclone: (doc) => {
-          // Ensure all no-print elements are hidden inside the cloned doc
-          doc.querySelectorAll('.no-print').forEach((n: any) => { n.style.display = 'none'; });
-        },
-      });
-
-      // Hide again immediately after capture
-      el.style.display = 'none';
-
-      setStatus('Building PDF...');
-
       const pdf = new jsPDF({ unit: 'px', format: [A4_W, A4_H], orientation: 'portrait', compress: true });
 
-      const imgW  = A4_W;
-      const imgH  = (canvas.height / canvas.width) * imgW;
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      // Capture each subpage container individually to ensure perfect layout alignments
+      const pageElements = Array.from(el.children);
 
-      // Slice the long canvas image into A4 pages
-      const totalPages = Math.ceil(imgH / A4_H);
-      for (let page = 0; page < totalPages; page++) {
-        if (page > 0) pdf.addPage([A4_W, A4_H], 'portrait');
-        const srcY  = page * A4_H * (canvas.width / imgW);
-        const srcH  = Math.min(A4_H * (canvas.width / imgW), canvas.height - srcY);
-        const slice = document.createElement('canvas');
-        slice.width  = canvas.width;
-        slice.height = srcH;
-        const ctx = slice.getContext('2d')!;
-        ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
-        const sliceData = slice.toDataURL('image/jpeg', 0.95);
-        const renderedH = (srcH / canvas.width) * imgW;
-        pdf.addImage(sliceData, 'JPEG', 0, 0, imgW, renderedH, '', 'FAST');
+      for (let i = 0; i < pageElements.length; i++) {
+        setStatus(`Rendering page ${i + 1} of ${pageElements.length}...`);
+        const pageEl = pageElements[i] as HTMLElement;
+
+        const canvas = await html2canvas(pageEl, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: A4_W,
+          windowWidth: A4_W,
+          logging: false,
+        });
+
+        if (i > 0) pdf.addPage([A4_W, A4_H], 'portrait');
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const imgW = A4_W;
+        const imgH = (canvas.height / canvas.width) * imgW;
+
+        pdf.addImage(imgData, 'JPEG', 0, 0, imgW, Math.min(imgH, A4_H), '', 'FAST');
       }
+
+      // Hide container immediately after capture
+      el.style.display = 'none';
 
       setStatus('Downloading...');
       const bizName = (user?.businessData?.business_name || 'Business').replace(/\s+/g, '_');
