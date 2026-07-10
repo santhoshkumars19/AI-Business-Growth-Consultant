@@ -17,21 +17,34 @@ export default function BudgetEstimatorPage() {
   const [period, setPeriod] = useState('1M');
 
   const set = (k: keyof typeof DEFAULT_BUDGET, v: number) => setBudget(b => ({ ...b, [k]: v }));
-  const totalBudget = Object.values(budget).reduce((a,b)=>a+b,0);
+  
+  const multiplier = useMemo(() => {
+    if (period === '3M') return 3;
+    if (period === '6M') return 6;
+    if (period === '12M') return 12;
+    return 1;
+  }, [period]);
+
+  const monthlyTotalBudget = Object.values(budget).reduce((a,b)=>a+b,0);
+  const totalBudget = monthlyTotalBudget * multiplier;
+  
   const budgetEntries = Object.entries(budget) as [BudgetCategory, number][];
   const budgetKeys = Object.keys(budget) as BudgetCategory[];
-  const projectedRevenue = useMemo(() =>
+  
+  const monthlyProjectedRevenue = useMemo(() =>
     budgetEntries.reduce((acc,[k,v]) => acc + (v * REVENUE_MULTIPLIERS[k]), 0)
   , [budgetEntries]);
-  const roi = totalBudget > 0 ? (((projectedRevenue - totalBudget) / totalBudget)*100).toFixed(1) : '0';
+  const projectedRevenue = monthlyProjectedRevenue * multiplier;
+
+  const roi = monthlyTotalBudget > 0 ? (((monthlyProjectedRevenue - monthlyTotalBudget) / monthlyTotalBudget)*100).toFixed(1) : '0';
   const breakeven = totalBudget;
   const periods = ['1M','3M','6M','12M'];
 
   const chartData = {
     labels: budgetKeys.map(k => CATEGORY_LABELS[k]),
     datasets: [
-      { label:'Budget Spent', data:budgetKeys.map(k => budget[k]), backgroundColor:budgetKeys.map(k => CATEGORY_COLORS[k]), borderRadius:6 },
-      { label:'Projected Return', data:budgetKeys.map(k => budget[k] * REVENUE_MULTIPLIERS[k]), backgroundColor:budgetKeys.map(k => `${CATEGORY_COLORS[k]}60`), borderRadius:6 },
+      { label:'Budget Spent', data:budgetKeys.map(k => budget[k] * multiplier), backgroundColor:budgetKeys.map(k => CATEGORY_COLORS[k]), borderRadius:6 },
+      { label:'Projected Return', data:budgetKeys.map(k => budget[k] * REVENUE_MULTIPLIERS[k] * multiplier), backgroundColor:budgetKeys.map(k => `${CATEGORY_COLORS[k]}60`), borderRadius:6 },
     ]
   };
   const chartOptions = {
@@ -44,8 +57,8 @@ export default function BudgetEstimatorPage() {
   };
 
   const tips = [
-    budget.marketing/totalBudget < 0.1 && 'Marketing spend is below 10% of total budget. Consider increasing for growth phase.',
-    budget.salaries/totalBudget > 0.6 && 'Salary costs are above 60% of total budget. Monitor closely as you scale.',
+    monthlyTotalBudget > 0 && (budget.marketing/monthlyTotalBudget) < 0.1 && 'Marketing spend is below 10% of total budget. Consider increasing for growth phase.',
+    monthlyTotalBudget > 0 && (budget.salaries/monthlyTotalBudget) > 0.6 && 'Salary costs are above 60% of total budget. Monitor closely as you scale.',
     projectedRevenue < revenueTarget && `Current allocation falls ₹${(revenueTarget-projectedRevenue).toLocaleString('en-IN')} short of your target. Increase Marketing budget for the highest ROI.`,
     Number(roi) > 80 && 'Great ROI projection! Consider reinvesting profits into further scaling.',
   ].filter(Boolean);
