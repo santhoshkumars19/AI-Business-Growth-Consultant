@@ -148,25 +148,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-
-      {/* ── FOOTER ── */}
-      <footer style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border)', padding: '32px 0' }}>
-        <div className="container">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 26, height: 26, borderRadius: 6, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>⚡</div>
-              <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1rem' }}>GrowthIQ<span style={{ color: 'var(--accent-primary)' }}> AI</span></span>
-            </div>
-            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-              {['About', 'Blog', 'Privacy', 'Terms', 'Contact'].map(l => (
-                <Link key={l} href={`/${l.toLowerCase()}`} style={{ fontSize: '0.875rem', color: 'var(--text-muted)', transition: 'color 0.15s' }}>{l}</Link>
-              ))}
-              <Link href="/pricing" style={{ fontSize: '0.875rem', color: 'var(--accent-primary)', fontWeight: 600 }}>Pricing</Link>
-            </div>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>© 2026 GrowthIQ AI. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
