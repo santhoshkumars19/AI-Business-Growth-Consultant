@@ -16,6 +16,8 @@ export default function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
   const [showAccountChooser, setShowAccountChooser] = useState(false);
+  const [customGoogleEmail, setCustomGoogleEmail] = useState('');
+  const [customGoogleName, setCustomGoogleName] = useState('');
 
   // Handle Google OAuth callback from URL hash
   useEffect(() => {
@@ -96,6 +98,13 @@ export default function LoginPage() {
     } finally {
       setGoogleLoading(false);
     }
+  };
+
+  const handleCustomGoogleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customGoogleEmail.trim()) return;
+    const name = customGoogleName.trim() || customGoogleEmail.split('@')[0];
+    handleSelectMockAccount(name, customGoogleEmail.trim());
   };
 
   const handleGoogleLogin = async () => {
@@ -289,7 +298,33 @@ export default function LoginPage() {
               ))}
             </div>
 
-            <div style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <form onSubmit={handleCustomGoogleSubmit} style={{ marginTop: 16, borderTop: '1px solid var(--border)', paddingTop: 16 }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 10 }}>Or use your own Google account details:</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
+                <input 
+                  type="email" 
+                  placeholder="Email Address" 
+                  value={customGoogleEmail} 
+                  onChange={e => setCustomGoogleEmail(e.target.value)} 
+                  className="input" 
+                  style={{ fontSize: '0.8rem', padding: '8px 12px' }}
+                  required
+                />
+                <input 
+                  type="text" 
+                  placeholder="Full Name (Optional)" 
+                  value={customGoogleName} 
+                  onChange={e => setCustomGoogleName(e.target.value)} 
+                  className="input" 
+                  style={{ fontSize: '0.8rem', padding: '8px 12px' }}
+                />
+              </div>
+              <button type="submit" className="btn btn-primary btn-sm btn-full" style={{ fontSize: '0.8rem', padding: '8px 14px' }}>
+                Sign In with Custom Account
+              </button>
+            </form>
+
+            <div style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 16 }}>
               🔒 Simulated Google Account Chooser
             </div>
           </div>
