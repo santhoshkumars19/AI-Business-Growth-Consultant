@@ -45,6 +45,7 @@ interface AuthContextType {
   loginWithGoogle: (credential: string) => Promise<AuthUser>;
   logout: () => void;
   saveBusinessData: (data: BusinessData) => Promise<void>;
+  updateProfile: (data: { name?: string; password?: string }) => Promise<void>;
   fetchWithAuth: (endpoint: string, options?: RequestInit) => Promise<any>;
 }
 
@@ -187,8 +188,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser((prev) => prev ? { ...prev, businessData: resData } : null);
   };
 
+  const updateProfile = async (data: { name?: string; password?: string }) => {
+    if (!user) return;
+    const resData = await fetchWithAuth('/auth/me', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+
+    setUser((prev) => prev ? { ...prev, name: resData.name } : null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, loginWithGoogle, logout, saveBusinessData, fetchWithAuth }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, loginWithGoogle, logout, saveBusinessData, updateProfile, fetchWithAuth }}>
       {children}
     </AuthContext.Provider>
   );

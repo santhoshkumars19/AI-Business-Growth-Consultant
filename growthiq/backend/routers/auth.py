@@ -252,6 +252,31 @@ def get_me(current_user: dict = Depends(get_current_user), db=Depends(get_supaba
     return UserOut(**result.data[0])
 
 
+@router.patch("/me", response_model=UserOut)
+def update_me(
+    payload: dict,
+    current_user: dict = Depends(get_current_user),
+    db=Depends(get_supabase)
+):
+    allowed = {"name"}
+    update_data = {k: v for k, v in payload.items() if k in allowed}
+    
+    if "password" in payload and payload["password"]:
+        new_pwd = payload["password"]
+        pwd_err = _validate_password_strength(new_pwd)
+        if pwd_err:
+            raise HTTPException(status_code=422, detail=pwd_err)
+        update_data["hashed_password"] = hash_password(new_pwd)
+        
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+        
+    result = db.table("users").update(update_data).eq("id", current_user["id"]).execute()
+    if not result.data:
+        raise HTTPException(status_code=404, detail="User not found")
+    return UserOut(**result.data[0])
+
+
 # ── Forgot Password (Direct Reset) ───────────────────────────────────────────
 
 @router.post("/forgot-password", response_model=ForgotPasswordOut)

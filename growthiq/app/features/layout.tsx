@@ -474,7 +474,7 @@ export default function FeaturesLayout({ children }: { children: React.ReactNode
                     <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{user?.name}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{user?.email}</div>
                   </div>
-                  {[['⚙️ Settings', '#'], ['📄 Download Report', '/features/pdf-export'], ['🚪 Sign Out', 'logout']].map(([label, href]) => (
+                  {[['⚙️ Settings', '/settings'], ['📄 Download Report', '/features/pdf-export'], ['🚪 Sign Out', 'logout']].map(([label, href]) => (
                     <button key={label}
                       onClick={() => { if (href === 'logout') handleLogout(); else { router.push(href); setShowUserMenu(false); } }}
                       style={{ width: '100%', padding: '8px 14px', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: href === 'logout' ? 'var(--accent-danger)' : 'var(--text-primary)', borderRadius: 8, display: 'block', minHeight: 36 }}
