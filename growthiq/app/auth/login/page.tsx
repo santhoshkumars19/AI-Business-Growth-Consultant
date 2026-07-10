@@ -76,7 +76,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setError('');
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     
@@ -86,6 +86,25 @@ export default function LoginPage() {
     }
 
     setGoogleLoading(true);
+
+    const isMock = clientId.startsWith('1087459152342-g1h2j3k4l5m6n7o8p9q0');
+    if (isMock) {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        const mockToken = `mock_google_token_demo-google@growthiq.com_Google-Demo-User`;
+        const authUser = await loginWithGoogle(mockToken);
+        if (authUser.role === 'admin') {
+          router.push('/admin/users');
+        } else {
+          router.push('/dashboard');
+        }
+      } catch (err: any) {
+        setError(err?.message || 'Google authentication failed.');
+      } finally {
+        setGoogleLoading(false);
+      }
+      return;
+    }
 
     try {
       const redirectUri = `${window.location.origin}/auth/login`;
