@@ -202,16 +202,22 @@ def forgot_password(data: ForgotPasswordIn, db=Depends(get_supabase)):
         return GENERIC_RESPONSE
 
     # Send the email
-    sent = send_password_reset_email(
-        to_email   = user["email"],
-        user_name  = user["name"],
-        reset_token= raw_token,
-    )
-    if not sent:
-        logger.warning("[FORGOT-PW] Email send failed for user %s", user["id"])
+    try:
+        send_password_reset_email(
+            to_email   = user["email"],
+            user_name  = user["name"],
+            reset_token= raw_token,
+        )
+    except Exception as exc:
+        logger.error("[FORGOT-PW] Email sending failed: %s", exc)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to deliver reset email. Details: {str(exc)}"
+        )
 
-    logger.info("[FORGOT-PW] Reset token issued for user %s", user["id"])
+    logger.info("[FORGOT-PW] Reset token issued and email sent successfully for user %s", user["id"])
     return GENERIC_RESPONSE
+
 
 
 # ── Reset Password ────────────────────────────────────────────────────────────

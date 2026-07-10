@@ -1,61 +1,143 @@
 """
 Email service for GrowthIQ AI.
-Uses Python's smtplib with Gmail SMTP (or any SMTP configured via .env).
-Falls back to logging when email is not configured (dev mode).
+Uses Python's smtplib with SMTP configured via .env.
+If SMTP_USER or SMTP_PASSWORD is not configured, it automatically provisions
+a temporary test email account using Ethereal Email (ethereal.email) and caches
+the credentials locally to ensure seamless out-of-the-box password resets.
 """
 
 import os
+import json
 import smtplib
 import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
+import httpx
 
 load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-SMTP_HOST     = os.getenv("SMTP_HOST", "smtp.gmail.com")
+SMTP_HOST     = os.getenv("SMTP_HOST", "")
 SMTP_PORT     = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER     = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
-FROM_EMAIL    = os.getenv("FROM_EMAIL", SMTP_USER or "noreply@growthiq.ai")
-FROM_NAME     = os.getenv("FROM_NAME", "GrowthIQ AI")
+FROM_EMAIL    = os.getenv("FROM_EMAIL", "")
+FROM_NAME     = os.getenv("FROM_NAME", "GrowthIQ AI Support")
 FRONTEND_URL  = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
+CACHE_FILE = "ethereal_account.json"
 
-def _send(to_email: str, subject: str, html_body: str) -> bool:
-    """Send an HTML email. Returns True on success, False on failure."""
-    if not SMTP_USER or not SMTP_PASSWORD:
-        # Dev-mode: just log the email content
-        logger.warning(
-            "[EMAIL DEV MODE] Would send to %s\nSubject: %s\n\n%s",
-            to_email, subject, html_body
+def _get_smtp_credentials() -> dict:
+    """
+    Get configured SMTP credentials from .env, or provision an Ethereal test account.
+    """
+    # 1. Check if user configured their own SMTP server in .env
+    if SMTP_USER and SMTP_PASSWORD:
+        return {
+            "host": SMTP_HOST or "smtp.gmail.com",
+            "port": SMTP_PORT,
+            "user": SMTP_USER,
+            "pass": SMTP_PASSWORD,
+            "from": FROM_EMAIL or SMTP_USER,
+            "is_ethereal": False
+        }
+
+    # 2. Otherwise, check cached Ethereal account
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "r") as f:
+                cached = json.load(f)
+                if cached.get("user") and cached.get("pass"):
+                    logger.info("[EMAIL] Using cached Ethereal Email test account: %s", cached["user"])
+                    return {
+                        "host": cached["smtp"]["host"],
+                        "port": cached["smtp"]["port"],
+                        "user": cached["user"],
+                        "pass": cached["pass"],
+                        "from": cached["user"],
+                        "web": cached.get("web"),
+                        "is_ethereal": True
+                    }
+        except Exception as e:
+            logger.warning("[EMAIL] Failed to read cached Ethereal credentials: %s", e)
+
+    # 3. Provision a new Ethereal test account if no cache exists
+    logger.info("[EMAIL] No SMTP credentials configured. Provisioning test account on ethereal.email...")
+    try:
+        response = httpx.post(
+            "https://api.nodemailer.com/user",
+            json={"requestor": "growthiq", "version": "1.0.0"},
+            timeout=10.0
         )
-        return True
+        if response.status_code != 200:
+            raise RuntimeError(f"Ethereal API returned status code {response.status_code}")
+        
+        data = response.json()
+        if data.get("status") != "success":
+            raise RuntimeError(f"Ethereal API failed: {data.get('error')}")
+
+        # Save to cache file
+        with open(CACHE_FILE, "w") as f:
+            json.dump(data, f, indent=2)
+
+        logger.info("[EMAIL] Successfully provisioned new Ethereal account: %s", data["user"])
+        logger.info("[EMAIL] Ethereal Web Inbox: %s", data.get("web"))
+
+        return {
+            "host": data["smtp"]["host"],
+            "port": data["smtp"]["port"],
+            "user": data["user"],
+            "pass": data["pass"],
+            "from": data["user"],
+            "web": data.get("web"),
+            "is_ethereal": True
+        }
+    except Exception as exc:
+        raise RuntimeError(
+            f"Failed to auto-configure Ethereal test mailer. "
+            f"Please configure SMTP_USER and SMTP_PASSWORD in your .env file. Error: {str(exc)}"
+        )
+
+def _send(to_email: str, subject: str, html_body: str) -> None:
+    """
+    Sends an HTML email using SMTP. Raises an exception if connection/sending fails.
+    """
+    creds = _get_smtp_credentials()
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"]    = f"{FROM_NAME} <{creds['from']}>"
+    msg["To"]      = to_email
+    msg.attach(MIMEText(html_body, "html"))
 
     try:
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"]    = f"{FROM_NAME} <{FROM_EMAIL}>"
-        msg["To"]      = to_email
-        msg.attach(MIMEText(html_body, "html"))
-
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        logger.info("[EMAIL] Connecting to SMTP server %s:%s...", creds["host"], creds["port"])
+        with smtplib.SMTP(creds["host"], creds["port"], timeout=15) as server:
             server.ehlo()
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASSWORD)
-            server.sendmail(FROM_EMAIL, to_email, msg.as_string())
-
-        logger.info("[EMAIL] Sent '%s' to %s", subject, to_email)
-        return True
+            if creds["port"] == 587:
+                server.starttls()
+                server.ehlo()
+            server.login(creds["user"], creds["pass"])
+            server.sendmail(creds["from"], to_email, msg.as_string())
+        
+        logger.info("[EMAIL] Successfully sent email to %s", to_email)
+        if creds.get("is_ethereal"):
+            # Log the exact location of the ethereal inbox so the developer can access it
+            logger.info("[ETHEREAL INBOX] View sent reset emails at: %s", creds.get("web"))
+            try:
+                print(f"\n[TEST EMAIL SENT] View reset link at: {creds.get('web')}\n")
+            except Exception:
+                pass
     except Exception as exc:
-        logger.error("[EMAIL] Failed to send to %s: %s", to_email, exc)
-        return False
+        logger.error("[EMAIL] SMTP operation failed: %s", exc)
+        raise RuntimeError(f"SMTP error: {str(exc)}")
 
-
-def send_password_reset_email(to_email: str, user_name: str, reset_token: str) -> bool:
-    """Send the password-reset link email."""
+def send_password_reset_email(to_email: str, user_name: str, reset_token: str) -> None:
+    """
+    Send the password-reset link email. Raises RuntimeError on failure.
+    """
     reset_url = f"{FRONTEND_URL}/auth/reset-password?token={reset_token}"
     subject   = "Reset your GrowthIQ AI password"
 
@@ -141,4 +223,4 @@ def send_password_reset_email(to_email: str, user_name: str, reset_token: str) -
 </body>
 </html>
 """
-    return _send(to_email, subject, html_body)
+    _send(to_email, subject, html_body)
