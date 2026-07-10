@@ -33,6 +33,7 @@ interface AuthUser {
   name: string;
   plan: string;
   role: string;
+  created_at?: string;
   businessData?: BusinessData;
 }
 

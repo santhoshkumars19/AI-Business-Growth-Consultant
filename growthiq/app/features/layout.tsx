@@ -18,19 +18,189 @@ const navItems = [
   { href: '/progress',                        icon: '📉', label: 'Progress Tracking' },
 ];
 
+interface NotificationItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: string;
+  href: string;
+  created_at: string;
+  read: boolean;
+}
+
 export default function FeaturesLayout({ children }: { children: React.ReactNode }) {
   const pathname     = usePathname();
   const router       = useRouter();
   const { theme, toggle } = useTheme();
-  const { user, logout }  = useAuth();
+  const { user, logout, fetchWithAuth }  = useAuth();
 
   const [collapsed,    setCollapsed]    = useState(false);
   const [mobileOpen,   setMobileOpen]   = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [greeting,     setGreeting]     = useState('Good morning');
 
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [showNotifMenu, setShowNotifMenu] = useState(false);
+
   const handleLogout = () => { logout(); router.push('/'); };
   const initial = user?.name?.[0]?.toUpperCase() || 'U';
+
+  useEffect(() => {
+    if (!user) return;
+
+    const loadNotifications = async () => {
+      try {
+        let items: NotificationItem[] = [];
+
+        // 1. Welcome
+        const signupDate = user.created_at ? new Date(user.created_at) : new Date(Date.now() - 24 * 60 * 60 * 1000);
+        items.push({
+          id: 'welcome',
+          title: 'Welcome to GrowthIQ AI! 🌱',
+          subtitle: 'Get started by running your first business analysis.',
+          icon: '🌱',
+          href: '/onboarding',
+          created_at: signupDate.toISOString(),
+          read: false,
+        });
+
+        // 2. Business Profile Status
+        if (user.businessData) {
+          items.push({
+            id: 'business_configured',
+            title: 'Business Profile Active 🏢',
+            subtitle: `Metrics for ${user.businessData.business_name} are active.`,
+            icon: '🏢',
+            href: '/onboarding',
+            created_at: signupDate.toISOString(),
+            read: false,
+          });
+        }
+
+        // 3. Plan Level
+        items.push({
+          id: 'plan_active',
+          title: `${user.plan ? user.plan.charAt(0).toUpperCase() + user.plan.slice(1) : 'Starter'} Plan Active ⭐`,
+          subtitle: 'You have full access to your plan features.',
+          icon: '⭐',
+          href: '/pricing',
+          created_at: signupDate.toISOString(),
+          read: false,
+        });
+
+        // 4. System updates
+        items.push({
+          id: 'system_update_v12',
+          title: 'AI Engine v1.2 Active 🧠',
+          subtitle: 'Model upgraded for SWOT & competitor intelligence.',
+          icon: '🧠',
+          href: '/dashboard',
+          created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+          read: false,
+        });
+
+        // 5. Fetch report history
+        try {
+          const historyReports = await fetchWithAuth('/analysis/history');
+          if (Array.isArray(historyReports)) {
+            historyReports.forEach((report: any) => {
+              items.push({
+                id: `report_${report.id}`,
+                title: 'AI Analysis Report Ready 📊',
+                subtitle: `Report for ${user.businessData?.business_name || 'your business'} has a health score of ${report.health_score}/100.`,
+                icon: '📊',
+                href: '/analysis',
+                created_at: report.created_at,
+                read: false,
+              });
+            });
+          }
+        } catch (e) {
+          console.error('Error loading report history for notifications:', e);
+        }
+
+        // 6. If Admin, fetch registrations
+        if (user.role === 'admin') {
+          try {
+            const adminNotifs = await fetchWithAuth('/admin/notifications');
+            if (adminNotifs && Array.isArray(adminNotifs.notifications)) {
+              adminNotifs.notifications.forEach((an: any, index: number) => {
+                items.push({
+                  id: `admin_reg_${index}_${an.created_at}`,
+                  title: an.title,
+                  subtitle: an.subtitle,
+                  icon: '🔔',
+                  href: '/admin/notifications',
+                  created_at: an.created_at || new Date().toISOString(),
+                  read: false,
+                });
+              });
+            }
+          } catch (e) {
+            console.error('Error loading admin notifications:', e);
+          }
+        }
+
+        // Sort by created_at desc
+        items.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+        // Load read status from localStorage
+        const readIds = JSON.parse(localStorage.getItem(`growthiq_read_${user.id}`) || '[]');
+        const clearedIds = JSON.parse(localStorage.getItem(`growthiq_cleared_${user.id}`) || '[]');
+
+        items = items
+          .filter(item => !clearedIds.includes(item.id))
+          .map(item => ({
+            ...item,
+            read: readIds.includes(item.id),
+          }));
+
+        setNotifications(items);
+      } catch (err) {
+        console.error('Failed to load notifications:', err);
+      }
+    };
+
+    loadNotifications();
+  }, [user]);
+
+  // Click outside handler to close notifications dropdown
+  useEffect(() => {
+    if (!showNotifMenu) return;
+    const closeMenu = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.notification-container')) {
+        setShowNotifMenu(false);
+      }
+    };
+    document.addEventListener('click', closeMenu);
+    return () => document.removeEventListener('click', closeMenu);
+  }, [showNotifMenu]);
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const handleNotificationClick = (item: NotificationItem) => {
+    const readIds = JSON.parse(localStorage.getItem(`growthiq_read_${user?.id}`) || '[]');
+    if (!readIds.includes(item.id)) {
+      readIds.push(item.id);
+      localStorage.setItem(`growthiq_read_${user?.id}`, JSON.stringify(readIds));
+    }
+    setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, read: true } : n));
+    setShowNotifMenu(false);
+    router.push(item.href);
+  };
+
+  const handleMarkAllAsRead = () => {
+    const readIds = notifications.map(n => n.id);
+    localStorage.setItem(`growthiq_read_${user?.id}`, JSON.stringify(readIds));
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const handleClearAll = () => {
+    const clearedIds = notifications.map(n => n.id);
+    localStorage.setItem(`growthiq_cleared_${user?.id}`, JSON.stringify(clearedIds));
+    setNotifications([]);
+  };
 
   useEffect(() => {
     const hr = new Date().getHours();
@@ -197,10 +367,99 @@ export default function FeaturesLayout({ children }: { children: React.ReactNode
             <button onClick={toggle} className="btn btn-ghost btn-sm" style={{ fontSize: '0.9rem' }}>
               {theme === 'dark' ? '☀️' : '🌙'}
             </button>
-            <button className="btn btn-ghost btn-icon" style={{ position: 'relative' }}>
-              🔔
-              <div style={{ position: 'absolute', top: 6, right: 6, width: 8, height: 8, borderRadius: '50%', background: 'var(--accent-danger)', border: '2px solid var(--bg-surface)' }} />
-            </button>
+            <div className="notification-container" style={{ position: 'relative' }}>
+              <button
+                onClick={() => setShowNotifMenu(!showNotifMenu)}
+                className="btn btn-ghost btn-icon"
+                style={{ position: 'relative' }}
+              >
+                🔔
+                {unreadCount > 0 && (
+                  <span className="notification-badge">{unreadCount}</span>
+                )}
+              </button>
+
+              {showNotifMenu && (
+                <div style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: 44,
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 16,
+                  boxShadow: 'var(--shadow-lg)',
+                  width: 320,
+                  maxHeight: 400,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  zIndex: 100,
+                  overflow: 'hidden',
+                  backdropFilter: 'blur(20px)',
+                  animation: 'fadeIn 0.2s ease',
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+                    <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>Notifications</span>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      {unreadCount > 0 && (
+                        <button onClick={handleMarkAllAsRead} style={{ background: 'none', border: 'none', color: 'var(--accent-primary)', fontSize: '0.75rem', cursor: 'pointer', padding: 0, fontWeight: 600 }}>
+                          Mark all read
+                        </button>
+                      )}
+                      {notifications.length > 0 && (
+                        <button onClick={handleClearAll} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.75rem', cursor: 'pointer', padding: 0, fontWeight: 600 }}>
+                          Clear all
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ overflowY: 'auto', flex: 1, maxHeight: 340 }}>
+                    {notifications.length === 0 ? (
+                      <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                        <div style={{ fontSize: '2rem', marginBottom: 8 }}>📭</div>
+                        No notifications
+                      </div>
+                    ) : (
+                      notifications.map(item => (
+                        <button
+                          key={item.id}
+                          onClick={() => handleNotificationClick(item)}
+                          className="notification-item"
+                          style={{
+                            width: '100%',
+                            background: item.read ? 'transparent' : 'rgba(var(--accent-primary-rgb), 0.04)',
+                            borderBottom: '1px solid var(--border)',
+                            borderLeft: item.read ? 'none' : '3px solid var(--accent-primary)',
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: 12,
+                            padding: '12px 16px',
+                            cursor: 'pointer',
+                            transition: 'background 0.2s ease',
+                            textAlign: 'left',
+                          }}
+                        >
+                          <span style={{ fontSize: '1.25rem', marginTop: 2, flexShrink: 0 }}>{item.icon}</span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '0.82rem', fontWeight: item.read ? 500 : 700, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {item.title}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.3 }}>
+                              {item.subtitle}
+                            </div>
+                            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: 4 }}>
+                              {new Date(item.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </div>
+                          {!item.read && (
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-primary)', marginTop: 6, flexShrink: 0 }} />
+                          )}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
@@ -240,6 +499,33 @@ export default function FeaturesLayout({ children }: { children: React.ReactNode
           </Link>
         ))}
       </div>
+      <style>{`
+        .notification-item:hover {
+          background: rgba(var(--accent-primary-rgb), 0.08) !important;
+        }
+        .notification-badge {
+          position: absolute;
+          top: -2px;
+          right: -2px;
+          min-width: 14px;
+          height: 14px;
+          border-radius: var(--radius-full);
+          background: var(--accent-danger);
+          color: #fff;
+          font-size: 0.65rem;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid var(--bg-surface);
+          padding: 0 4px;
+          box-sizing: content-box;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }

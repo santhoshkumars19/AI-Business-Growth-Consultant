@@ -67,10 +67,6 @@ export default function SwotPage() {
           <h1 style={{ fontSize:'1.5rem', fontWeight:800, marginBottom:4 }}>SWOT Analysis</h1>
           <p style={{ color:'var(--text-secondary)', fontSize:'0.875rem' }}>AI-generated strengths, weaknesses, opportunities & threats — editable</p>
         </div>
-        <div style={{ display:'flex', gap:10 }}>
-          <button className="btn btn-ghost btn-sm" onClick={() => navigator.clipboard.writeText(JSON.stringify(items, null, 2))}>📋 Copy</button>
-          <button className="btn btn-primary btn-sm" onClick={() => window.print()}>📄 Export PDF</button>
-        </div>
       </div>
 
       <div className="swot-grid">
