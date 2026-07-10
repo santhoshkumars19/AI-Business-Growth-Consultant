@@ -103,8 +103,12 @@ export default function SeoAuditPage() {
                       <span className={`badge badge-${a.priority==='Critical'?'danger':a.priority==='Warning'?'warning':'muted'}`}>{a.priority}</span>
                     </div>
                     <div style={{ fontSize:'0.82rem', color:'var(--text-secondary)', lineHeight:1.5 }}>{a.fix}</div>
+                    <div className="hide-desktop" style={{ fontSize:'0.8rem', marginTop:4 }}>
+                      <span style={{ color:'var(--text-muted)' }}>Current: </span>
+                      <strong style={{ color: a.status==='ok'?'var(--accent-success)':'var(--text-primary)' }}>{a.current}</strong>
+                    </div>
                   </div>
-                  <div style={{ textAlign:'right', flexShrink:0 }}>
+                  <div className="hide-mobile" style={{ textAlign:'right', flexShrink:0 }}>
                     <div style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>Current</div>
                     <div style={{ fontSize:'0.82rem', fontWeight:600, color: a.status==='ok'?'var(--accent-success)':'var(--text-primary)' }}>{a.current}</div>
                   </div>
