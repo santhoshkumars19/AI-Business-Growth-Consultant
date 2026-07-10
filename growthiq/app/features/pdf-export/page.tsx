@@ -346,7 +346,8 @@ export default function PdfExportPage() {
       const pdf = new jsPDF({ unit: 'px', format: [A4_W, A4_H], orientation: 'portrait', compress: true });
 
       // Capture each subpage container individually to ensure perfect layout alignments
-      const pageElements = Array.from(el.children);
+      const pdfContentEl = el.querySelector('#pdf-content');
+      const pageElements = pdfContentEl ? Array.from(pdfContentEl.children) : Array.from(el.children);
 
       for (let i = 0; i < pageElements.length; i++) {
         setStatus(`Rendering page ${i + 1} of ${pageElements.length}...`);
