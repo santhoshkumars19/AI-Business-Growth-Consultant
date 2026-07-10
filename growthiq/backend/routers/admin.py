@@ -26,7 +26,7 @@ def get_all_users(
     users = users_result.data or []
 
     # Try to fetch business data and join
-    biz_result = db.table("businesses").select("user_id,business_name,industry,city,state").execute()
+    biz_result = db.table("business_data").select("user_id,business_name,industry,city,state").execute()
     biz_map = {b["user_id"]: b for b in (biz_result.data or [])}
 
     enriched = []
@@ -63,7 +63,7 @@ def get_user_detail(user_id: str, admin=Depends(require_admin), db=Depends(get_s
         raise HTTPException(status_code=404, detail="User not found")
     user = user_r.data[0]
 
-    biz_r = db.table("businesses").select("*").eq("user_id", user_id).execute()
+    biz_r = db.table("business_data").select("*").eq("user_id", user_id).execute()
     business = biz_r.data[0] if biz_r.data else {}
 
     analyses_r = db.table("analyses").select(
@@ -101,7 +101,7 @@ def update_user(
 def delete_user(user_id: str, admin=Depends(require_admin), db=Depends(get_supabase)):
     # Delete related data first
     db.table("analyses").delete().eq("user_id", user_id).execute()
-    db.table("businesses").delete().eq("user_id", user_id).execute()
+    db.table("business_data").delete().eq("user_id", user_id).execute()
     db.table("payments").delete().eq("user_id", user_id).execute()
     result = db.table("users").delete().eq("id", user_id).execute()
     return {"deleted": True, "user_id": user_id}
@@ -126,7 +126,7 @@ def get_analytics(admin=Depends(require_admin), db=Depends(get_supabase)):
     users = db.table("users").select("id,plan,role,created_at").execute()
     analyses = db.table("analyses").select("id,health_score,user_id,created_at").execute()
     payments = db.table("payments").select("amount,status,created_at").eq("status", "success").execute()
-    businesses = db.table("businesses").select("industry,state").execute()
+    businesses = db.table("business_data").select("industry,state").execute()
 
     users_data = users.data or []
     analyses_data = analyses.data or []
@@ -286,7 +286,7 @@ def get_overview(admin=Depends(require_admin), db=Depends(get_supabase)):
     users = db.table("users").select("id,plan,role,created_at").execute()
     analyses = db.table("analyses").select("id,health_score,created_at").execute()
     payments = db.table("payments").select("amount,status").eq("status", "success").execute()
-    businesses = db.table("businesses").select("id").execute()
+    businesses = db.table("business_data").select("id").execute()
 
     users_data = users.data or []
     analyses_data = analyses.data or []
