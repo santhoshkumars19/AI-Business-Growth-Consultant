@@ -122,17 +122,17 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
         </div>
       </div>
 
-      {/* ── Page 2: Summary + Score Breakdown ──────── */}
+      {/* ── Page 2: Summary + Score Breakdown + Competitor ──────── */}
       <div style={{ padding:'48px 56px', boxSizing:'border-box', minHeight:1123, width:794 }}>
         {sectionTitle('Executive Summary', 'AI-generated overview of your business performance')}
-        <p style={{ fontSize:12, color:'#374151', lineHeight:1.8, background:'#F8FAFC', border:'1px solid #E2E8F0', borderRadius:10, padding:'16px 20px', marginBottom:28 }}>
+        <p style={{ fontSize:11.5, color:'#374151', lineHeight:1.7, background:'#F8FAFC', border:'1px solid #E2E8F0', borderRadius:10, padding:'12px 16px', marginBottom:20 }}>
           {analysis.summary || 'No summary available.'}
         </p>
 
         {sectionTitle('Business Health Score', 'Performance across 4 key business dimensions')}
-        <div style={{ display:'flex', alignItems:'center', gap:40, marginBottom:32, background:'#F8FAFC', borderRadius:14, padding:'24px 28px', border:'1px solid #E2E8F0' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:32, marginBottom:20, background:'#F8FAFC', borderRadius:14, padding:'16px 20px', border:'1px solid #E2E8F0' }}>
           <div style={{ textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', flexShrink:0, minWidth:100 }}>
-            <div style={{ fontSize:48, fontWeight:800, color:sc, lineHeight:1.1 }}>{analysis.health_score}</div>
+            <div style={{ fontSize:44, fontWeight:800, color:sc, lineHeight:1.1 }}>{analysis.health_score}</div>
             <div style={{ fontSize:9, color:'#9CA3AF', marginTop:4, letterSpacing:'0.05em' }}>OUT OF 100</div>
             <div style={{ marginTop:8, padding:'4px 12px', background:`${sc}20`, color:sc, borderRadius:99, fontSize:10, fontWeight:700 }}>
               {analysis.health_score >= 70 ? 'STRONG' : analysis.health_score >= 40 ? 'MODERATE' : 'CRITICAL'}
@@ -144,7 +144,7 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
         </div>
 
         {sectionTitle('Key Business Metrics')}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:12, marginBottom:28 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:10, marginBottom:20 }}>
           {cell('Monthly Revenue', `₹${(biz?.monthly_revenue||0).toLocaleString('en-IN')}`, '#10B981')}
           {cell('Monthly Expenses', `₹${(biz?.monthly_expenses||0).toLocaleString('en-IN')}`, '#F59E0B')}
           {cell('Net Profit', `₹${profit.toLocaleString('en-IN')}`, profit >= 0 ? '#10B981' : '#EF4444')}
@@ -154,12 +154,37 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
           {cell('Employees', `${biz?.employee_count||1}`, '#374151')}
           {cell('Online Presence', biz?.online_presence || 'None', '#374151')}
         </div>
+
+        {/* Competitor Insights */}
+        {analysis.competitor_insights && (
+          <>
+            {sectionTitle('Competitor Analysis', 'Market positioning and competitive intelligence')}
+            <div style={{ background:'#F8FAFC', borderRadius:12, padding:'14px 16px', border:'1px solid #E2E8F0' }}>
+              <div style={{ fontWeight:700, fontSize:11.5, color:'#1E293B', marginBottom:6 }}>Market Position</div>
+              <p style={{ fontSize:10.8, color:'#374151', lineHeight:1.6, marginBottom:10 }}>{analysis.competitor_insights.market_position}</p>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+                <div>
+                  <div style={{ fontWeight:700, fontSize:10.5, color:'#16A34A', marginBottom:4 }}>✅ Your Advantages</div>
+                  {analysis.competitor_insights.advantages?.slice(0,3).map((a, i) => (
+                    <div key={i} style={{ fontSize:10, color:'#374151', padding:'2px 0', borderBottom:'1px solid #F1F5F9' }}>• {a}</div>
+                  ))}
+                </div>
+                <div>
+                  <div style={{ fontWeight:700, fontSize:10.5, color:'#DC2626', marginBottom:4 }}>⚠️ Key Gaps</div>
+                  {analysis.competitor_insights.key_gaps?.slice(0,3).map((g, i) => (
+                    <div key={i} style={{ fontSize:10, color:'#374151', padding:'2px 0', borderBottom:'1px solid #F1F5F9' }}>• {g}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* ── Page 3: SWOT ────────────────────────────── */}
+      {/* ── Page 3: SWOT + AI Recs + SEO + Marketing Plan ──────── */}
       <div style={{ padding:'48px 56px', boxSizing:'border-box', minHeight:1123, width:794 }}>
         {sectionTitle('SWOT Analysis', 'Strengths, Weaknesses, Opportunities & Threats')}
-        <div style={{ display:'flex', flexWrap:'wrap', gap:12, marginBottom:28 }}>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:10, marginBottom:20 }}>
           {swotBox('💪 Strengths',    analysis.swot?.strengths || [],    '#F0FDF4','#86EFAC','#16A34A')}
           {swotBox('⚠️ Weaknesses',  analysis.swot?.weaknesses || [],   '#FFF1F2','#FCA5A5','#DC2626')}
           {swotBox('🚀 Opportunities',analysis.swot?.opportunities || [],'#EFF6FF','#93C5FD','#2563EB')}
@@ -167,89 +192,58 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
         </div>
 
         {/* AI Recommendations */}
-        {sectionTitle('AI-Powered Recommendations', 'Data-backed growth actions for your business')}
-        <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
-          {(analysis.recommendations || []).map((rec, i) => (
-            <div key={i} style={{ background:'#F8FAFC', borderRadius:10, padding:'14px 16px', border:`1.5px solid ${rec.priority==='high'?'#FCA5A5':rec.priority==='medium'?'#FCD34D':'#86EFAC'}`, borderLeft:`4px solid ${rec.priority==='high'?'#EF4444':rec.priority==='medium'?'#F59E0B':'#10B981'}` }}>
-              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
-                <span style={{ fontSize:11, fontWeight:700, color: rec.priority==='high'?'#EF4444':rec.priority==='medium'?'#F59E0B':'#10B981', background: rec.priority==='high'?'#FFF1F2':rec.priority==='medium'?'#FFFBEB':'#F0FDF4', padding:'2px 8px', borderRadius:99, textTransform:'uppercase' }}>
-                  {rec.priority === 'high' ? '🔴 High Priority' : rec.priority === 'medium' ? '🟡 Medium' : '🟢 Quick Win'}
+        {sectionTitle('AI Recommendations', 'Data-backed growth actions')}
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:20 }}>
+          {(analysis.recommendations || []).slice(0, 4).map((rec, i) => (
+            <div key={i} style={{ background:'#F8FAFC', borderRadius:10, padding:'10px 12px', border:`1px solid ${rec.priority==='high'?'#FCA5A5':rec.priority==='medium'?'#FCD34D':'#86EFAC'}`, borderLeft:`3.5px solid ${rec.priority==='high'?'#EF4444':rec.priority==='medium'?'#F59E0B':'#10B981'}` }}>
+              <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
+                <span style={{ fontSize:9.5, fontWeight:700, color: rec.priority==='high'?'#EF4444':rec.priority==='medium'?'#F59E0B':'#10B981', background: rec.priority==='high'?'#FFF1F2':rec.priority==='medium'?'#FFFBEB':'#F0FDF4', padding:'1px 6px', borderRadius:99, textTransform:'uppercase' }}>
+                  {rec.priority === 'high' ? '🔴 High' : rec.priority === 'medium' ? '🟡 Med' : '🟢 Win'}
                 </span>
-                <span style={{ fontSize:10, color:'#6B7280', background:'#F1F5F9', padding:'2px 8px', borderRadius:99, textTransform:'capitalize' }}>{rec.category}</span>
-                {rec.impact && <span style={{ fontSize:10, color:'#10B981', background:'#F0FDF4', padding:'2px 8px', borderRadius:99, marginLeft:'auto' }}>{rec.impact}</span>}
+                <span style={{ fontSize:9, color:'#6B7280', background:'#F1F5F9', padding:'1px 6px', borderRadius:99, textTransform:'capitalize' }}>{rec.category}</span>
               </div>
-              <div style={{ fontWeight:700, fontSize:12, color:'#1E293B', marginBottom:4 }}>{rec.title}</div>
-              <div style={{ fontSize:11, color:'#6B7280', lineHeight:1.6 }}>{rec.description}</div>
+              <div style={{ fontWeight:700, fontSize:11, color:'#1E293B', marginBottom:2 }}>{rec.title}</div>
+              <div style={{ fontSize:10, color:'#6B7280', lineHeight:1.4 }}>{rec.description}</div>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* ── Page 4: SEO + Competitor + Marketing ──── */}
-      <div style={{ padding:'48px 56px', boxSizing:'border-box', minHeight:1123, width:794 }}>
-        {/* SEO Audit */}
-        {analysis.seo_tips?.length > 0 && (
-          <>
-            {sectionTitle('SEO Audit', 'Search engine optimisation recommendations')}
-            <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:28 }}>
-              {analysis.seo_tips.slice(0,6).map((s, i) => (
-                <div key={i} style={{ display:'flex', gap:12, padding:'10px 14px', background:'#F8FAFC', borderRadius:8, border:'1px solid #E2E8F0' }}>
-                  <div style={{ width:22, height:22, borderRadius:'50%', background:'#6366F1', color:'#fff', fontSize:10, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1 }}>{i+1}</div>
-                  <div>
-                    <div style={{ fontSize:11.5, fontWeight:600, color:'#1E293B', marginBottom:2 }}>{s.tip}</div>
-                    {s.impact && <div style={{ fontSize:10, color:'#6B7280' }}>Impact: {s.impact}</div>}
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
+          {/* SEO Audit */}
+          <div>
+            {sectionTitle('SEO Audit Tips')}
+            {analysis.seo_tips?.length > 0 && (
+              <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                {analysis.seo_tips.slice(0, 4).map((s, i) => (
+                  <div key={i} style={{ display:'flex', gap:8, padding:'8px 10px', background:'#F8FAFC', borderRadius:8, border:'1px solid #E2E8F0' }}>
+                    <div style={{ width:18, height:18, borderRadius:'50%', background:'#6366F1', color:'#fff', fontSize:9, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1 }}>{i+1}</div>
+                    <div style={{ fontSize:10, fontWeight:600, color:'#1E293B', lineHeight:1.3 }}>{s.tip}</div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* Competitor Insights */}
-        {analysis.competitor_insights && (
-          <>
-            {sectionTitle('Competitor Analysis', 'Market positioning and competitive intelligence')}
-            <div style={{ background:'#F8FAFC', borderRadius:12, padding:'18px 20px', border:'1px solid #E2E8F0', marginBottom:28 }}>
-              <div style={{ fontWeight:700, fontSize:12, color:'#1E293B', marginBottom:8 }}>Market Position</div>
-              <p style={{ fontSize:11.5, color:'#374151', lineHeight:1.7, marginBottom:14 }}>{analysis.competitor_insights.market_position}</p>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
-                <div>
-                  <div style={{ fontWeight:700, fontSize:11, color:'#16A34A', marginBottom:6 }}>✅ Your Advantages</div>
-                  {analysis.competitor_insights.advantages?.map((a, i) => (
-                    <div key={i} style={{ fontSize:10.5, color:'#374151', padding:'3px 0', borderBottom:'1px solid #F1F5F9' }}>• {a}</div>
-                  ))}
-                </div>
-                <div>
-                  <div style={{ fontWeight:700, fontSize:11, color:'#DC2626', marginBottom:6 }}>⚠️ Key Gaps</div>
-                  {analysis.competitor_insights.key_gaps?.map((g, i) => (
-                    <div key={i} style={{ fontSize:10.5, color:'#374151', padding:'3px 0', borderBottom:'1px solid #F1F5F9' }}>• {g}</div>
-                  ))}
-                </div>
+                ))}
               </div>
-            </div>
-          </>
-        )}
+            )}
+          </div>
 
-        {/* Marketing Plan */}
-        {analysis.marketing_plan?.length > 0 && (
-          <>
-            {sectionTitle('30-Day Marketing Plan', 'Week-by-week growth strategy')}
-            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              {analysis.marketing_plan.slice(0,4).map((week, i) => (
-                <div key={i} style={{ background:'#F8FAFC', borderRadius:10, padding:'12px 16px', border:'1px solid #E2E8F0', borderLeft:`4px solid ${barColor}` }}>
-                  <div style={{ fontWeight:700, fontSize:12, color:'#1E293B', marginBottom:4 }}>Week {week.week}: {week.strategy}</div>
-                  <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
-                    {week.tactics?.map((t, ti) => (
-                      <span key={ti} style={{ fontSize:10, color:'#6366F1', background:'#EEF2FF', padding:'2px 8px', borderRadius:99 }}>• {t}</span>
-                    ))}
+          {/* Marketing Plan */}
+          <div>
+            {sectionTitle('30-Day Marketing Plan')}
+            {analysis.marketing_plan?.length > 0 && (
+              <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                {analysis.marketing_plan.slice(0, 3).map((week, i) => (
+                  <div key={i} style={{ background:'#F8FAFC', borderRadius:8, padding:'8px 12px', border:'1px solid #E2E8F0', borderLeft:`3.5px solid ${barColor}` }}>
+                    <div style={{ fontWeight:700, fontSize:10.5, color:'#1E293B', marginBottom:2 }}>Week {week.week}: {week.strategy}</div>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
+                      {week.tactics?.slice(0,2).map((t, ti) => (
+                        <span key={ti} style={{ fontSize:8.5, color:'#6366F1', background:'#EEF2FF', padding:'1px 6px', borderRadius:99 }}>• {t}</span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-
     </div>
   );
 }
