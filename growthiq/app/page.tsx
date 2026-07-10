@@ -42,27 +42,20 @@ export default function LandingPage() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-base)', overflowX: 'hidden' }}>
 
-      {/* ── MOBILE MENU OVERLAY ── */}
       {menuOpen && (
         <>
           <div className="mobile-menu-overlay" onClick={() => setMenuOpen(false)} />
           <div className="mobile-menu-panel">
+            {/* Panel header */}
             <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 28, height: 28, borderRadius: 7, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}>⚡</div>
                 <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.1rem' }}>GrowthIQ<span style={{ color: 'var(--accent-primary)' }}> AI</span></span>
               </div>
-              <button onClick={() => setMenuOpen(false)} style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--bg-elevated)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: 'var(--text-secondary)' }}>✕</button>
+              <button onClick={() => setMenuOpen(false)} style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--bg-elevated)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕</button>
             </div>
-            <nav style={{ padding: '16px 12px', flex: 1 }}>
-              {navLinks.map(l => (
-                <Link key={l.href} href={l.href} onClick={() => setMenuOpen(false)}
-                  style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', borderRadius: 10, color: 'var(--text-primary)', fontWeight: 500, fontSize: '0.95rem', marginBottom: 4, transition: 'background 0.15s' }}>
-                  {l.label}
-                </Link>
-              ))}
-            </nav>
-            <div style={{ padding: '16px 20px 24px', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {/* Actions only — no nav links */}
+            <div style={{ padding: '24px 20px 32px', display: 'flex', flexDirection: 'column', gap: 12 }}>
               <Link href="/auth/login" onClick={() => setMenuOpen(false)} className="btn btn-ghost btn-lg btn-full">Sign In</Link>
               <Link href="/auth/register" onClick={() => setMenuOpen(false)} className="btn btn-primary btn-lg btn-full">Get Started Free</Link>
             </div>
@@ -80,9 +73,10 @@ export default function LandingPage() {
         backdropFilter: scrolled ? 'blur(16px)' : 'none',
         transition: 'all 0.3s ease'
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 30, height: 30, borderRadius: 7, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>⚡</div>
-          <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-primary)' }}>GrowthIQ<span style={{ color: 'var(--accent-primary)' }}> AI</span></span>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <div style={{ width: 30, height: 30, borderRadius: 7, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>⚡</div>
+          {/* Hide text on mobile to prevent overlap with action buttons */}
+          <span className="hide-mobile" style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>GrowthIQ<span style={{ color: 'var(--accent-primary)' }}> AI</span></span>
         </Link>
 
         {/* Desktop Nav */}
