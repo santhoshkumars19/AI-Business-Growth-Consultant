@@ -30,7 +30,6 @@ export default function RegisterPage() {
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [role, setRole] = useState<'user' | 'admin'>('user');
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
@@ -40,8 +39,8 @@ export default function RegisterPage() {
     if (!agreed) { setError('Please accept the Terms of Service.'); return; }
     setLoading(true); setError('');
     try {
-      await register(form.email, form.password, form.name, role);
-      router.push(role === 'admin' ? '/admin/users' : '/onboarding');
+      await register(form.email, form.password, form.name, 'user');
+      router.push('/onboarding');
     } catch {
       setError('Registration failed. Please make sure the email format is correct.');
     } finally { setLoading(false); }
@@ -78,26 +77,6 @@ export default function RegisterPage() {
           <h1 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.4rem, 4vw, 1.875rem)', fontWeight: 800, marginBottom: 6 }}>Create your account</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: 22 }}>Already have one? <Link href="/auth/login" className="link">Sign in →</Link></p>
 
-          {/* Role Selection Tabs */}
-          <div style={{ display: 'flex', gap: 8, marginBottom: 22, background: 'var(--bg-elevated)', padding: 4, borderRadius: 8 }}>
-            {(['user', 'admin'] as const).map(type => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setRole(type)}
-                style={{
-                  flex: 1, padding: '8px 12px', borderRadius: 6,
-                  fontSize: '0.875rem', fontWeight: 600,
-                  background: role === type ? (type === 'admin' ? 'var(--accent-danger)' : 'var(--accent-primary)') : 'transparent',
-                  color: role === type ? '#fff' : 'var(--text-secondary)',
-                  border: 'none', cursor: 'pointer', transition: 'all 0.2s ease'
-                }}
-              >
-                {type === 'user' ? '👤 Register User' : '🛡️ Register Admin'}
-              </button>
-            ))}
-          </div>
-
           {error && <div style={{ background: 'rgba(var(--accent-danger-rgb),0.1)', border: '1px solid var(--accent-danger)', borderRadius: 10, padding: '12px 16px', color: 'var(--accent-danger)', fontSize: '0.875rem', marginBottom: 18 }}>⚠️ {error}</div>}
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -125,8 +104,8 @@ export default function RegisterPage() {
                 I agree to the <Link href="/terms" className="link">Terms of Service</Link> and <Link href="/privacy" className="link">Privacy Policy</Link>
               </span>
             </label>
-            <button type="submit" className="btn btn-primary btn-lg btn-full" style={{ marginTop: 4, background: role === 'admin' ? 'var(--accent-danger)' : 'var(--accent-primary)' }} disabled={loading}>
-              {loading ? 'Creating account...' : role === 'admin' ? 'Sign Up as Admin →' : 'Sign Up as User →'}
+            <button type="submit" className="btn btn-primary btn-lg btn-full" style={{ marginTop: 4 }} disabled={loading}>
+              {loading ? 'Creating account...' : 'Sign Up as User →'}
             </button>
           </form>
 
