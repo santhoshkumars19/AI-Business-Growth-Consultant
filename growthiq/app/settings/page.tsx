@@ -227,18 +227,6 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Subscription Plan */}
-        <div style={{ ...glass, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-          <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 4 }}>⭐ Current Subscription</h3>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-              You are currently subscribed to the <strong style={{ textTransform: 'capitalize', color: 'var(--accent-primary)' }}>{user.plan || 'starter'} plan</strong>.
-            </p>
-          </div>
-          <Link href="/pricing" className="btn btn-primary btn-sm">
-            Upgrade Plan
-          </Link>
-        </div>
 
       </div>
     </div>
