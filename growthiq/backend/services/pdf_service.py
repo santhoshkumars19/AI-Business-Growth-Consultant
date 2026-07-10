@@ -25,8 +25,8 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
     doc = SimpleDocTemplate(
         buffer,
         pagesize=A4,
-        rightMargin=2*cm, leftMargin=2*cm,
-        topMargin=2*cm, bottomMargin=2*cm
+        rightMargin=1.5*cm, leftMargin=1.5*cm,
+        topMargin=1.2*cm, bottomMargin=1.2*cm
     )
 
     styles = getSampleStyleSheet()
@@ -34,24 +34,24 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
 
     # ── Custom Styles ────────────────────────────────────────────────────────
     title_style = ParagraphStyle("Title", parent=styles["Title"],
-        fontName="Helvetica-Bold", fontSize=26, textColor=BRAND_PURPLE,
+        fontName="Helvetica-Bold", fontSize=24, leading=28, textColor=BRAND_PURPLE,
         spaceAfter=6, alignment=TA_CENTER)
 
     h2_style = ParagraphStyle("H2", parent=styles["Heading2"],
-        fontName="Helvetica-Bold", fontSize=14, textColor=BRAND_DARK,
-        spaceBefore=16, spaceAfter=8)
+        fontName="Helvetica-Bold", fontSize=13, textColor=BRAND_DARK,
+        spaceBefore=10, spaceAfter=4)
 
     body_style = ParagraphStyle("Body", parent=styles["Normal"],
-        fontName="Helvetica", fontSize=10, leading=16, textColor=colors.HexColor("#374151"))
+        fontName="Helvetica", fontSize=9.5, leading=14, textColor=colors.HexColor("#374151"))
 
     # ── Header ───────────────────────────────────────────────────────────────
     story.append(Paragraph("■ GrowthIQ AI", ParagraphStyle("Brand",
         fontName="Helvetica-Bold", fontSize=12, textColor=BRAND_PURPLE, alignment=TA_CENTER)))
-    story.append(Spacer(1, 0.3*cm))
+    story.append(Spacer(1, 0.15*cm))
     story.append(Paragraph("Business Growth Report", title_style))
     story.append(Paragraph(f"{business.get('industry', business.get('business_name', 'N/A'))} · {business.get('city', '')} · Generated {datetime.now().strftime('%d %B %Y')}", 
         ParagraphStyle("Sub", fontName="Helvetica", fontSize=10, textColor=colors.grey, alignment=TA_CENTER)))
-    story.append(HRFlowable(width="100%", thickness=2, color=BRAND_PURPLE, spaceAfter=16))
+    story.append(HRFlowable(width="100%", thickness=2, color=BRAND_PURPLE, spaceAfter=12))
 
     # ── Health Score ─────────────────────────────────────────────────────────
     health_score = analysis.get("health_score", 0)
@@ -61,10 +61,10 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
 
     score_data = [
         [Paragraph(f'<font color="{score_hex}">{health_score}</font>', 
-            ParagraphStyle("Score", fontName="Helvetica-Bold", fontSize=36, alignment=TA_CENTER)),
+            ParagraphStyle("Score", fontName="Helvetica-Bold", fontSize=36, leading=40, alignment=TA_CENTER)),
          Paragraph(analysis.get("summary", ""), body_style)]
     ]
-    score_table = Table(score_data, colWidths=[4*cm, 12*cm])
+    score_table = Table(score_data, colWidths=[4.5*cm, 13.5*cm])
     score_table.setStyle(TableStyle([
         ("ALIGN", (0, 0), (0, 0), "CENTER"),
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
@@ -72,44 +72,44 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
         ("BACKGROUND", (1, 0), (1, 0), colors.white),
         ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#E5E7EB")),
         ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#E5E7EB")),
-        ("TOPPADDING", (0, 0), (-1, -1), 12),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
-        ("LEFTPADDING", (0, 0), (-1, -1), 12),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 12),
+        ("TOPPADDING", (0, 0), (-1, -1), 10),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+        ("LEFTPADDING", (0, 0), (-1, -1), 10),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
     ]))
     story.append(score_table)
-    story.append(Spacer(1, 0.5*cm))
+    story.append(Spacer(1, 0.2*cm))
 
     # ── Key Metrics ──────────────────────────────────────────────────────────
     story.append(Paragraph("Key Business Metrics", h2_style))
     metrics_data = [
         ["Metric", "Value"],
-        ["Monthly Revenue", f"■{business.get('monthly_revenue', 0):,.0f}"],
-        ["Monthly Expenses", f"■{business.get('monthly_expenses', 0):,.0f}"],
+        ["Monthly Revenue", f"■ {business.get('monthly_revenue', 0):,.0f}"],
+        ["Monthly Expenses", f"■ {business.get('monthly_expenses', 0):,.0f}"],
         ["Monthly Customers", str(business.get('monthly_customers', 0))],
-        ["Avg Order Value", f"■{business.get('avg_order_value', 0):,.0f}"],
+        ["Avg Order Value", f"■ {business.get('avg_order_value', 0):,.0f}"],
         ["Profit Margin", f"{business.get('profit_margin', 0)}%"],
         ["Growth Rate", f"{business.get('growth_rate', 0)}%"],
         ["Online Presence", business.get('online_presence', 'N/A').title()],
     ]
-    metrics_table = Table(metrics_data, colWidths=[8*cm, 8*cm])
+    metrics_table = Table(metrics_data, colWidths=[9*cm, 9*cm])
     metrics_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), BRAND_PURPLE),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
         ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, 0), 11),
+        ("FONTSIZE", (0, 0), (-1, 0), 10),
         ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, LIGHT_BG]),
-        ("FONTSIZE", (0, 1), (-1, -1), 10),
+        ("FONTSIZE", (0, 1), (-1, -1), 9.5),
         ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#E5E7EB")),
         ("ALIGN", (0, 0), (0, -1), "LEFT"),
         ("ALIGN", (1, 0), (1, -1), "RIGHT"),
-        ("TOPPADDING", (0, 0), (-1, -1), 8),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
-        ("LEFTPADDING", (0, 0), (-1, -1), 12),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 12),
+        ("TOPPADDING", (0, 0), (-1, -1), 6),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ("LEFTPADDING", (0, 0), (-1, -1), 10),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
     ]))
     story.append(metrics_table)
-    story.append(Spacer(1, 0.5*cm))
+    story.append(Spacer(1, 0.2*cm))
 
     # ── Recommendations ──────────────────────────────────────────────────────
     story.append(Paragraph("AI Recommendations", h2_style))
@@ -139,7 +139,7 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
         [Paragraph("<br/>".join(f"• {o}" for o in swot.get("opportunities", [])), body_style),
          Paragraph("<br/>".join(f"• {t}" for t in swot.get("threats", [])), body_style)],
     ]
-    swot_table = Table(swot_data, colWidths=[8*cm, 8*cm])
+    swot_table = Table(swot_data, colWidths=[9*cm, 9*cm])
     swot_table.setStyle(TableStyle([
         ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#E5E7EB")),
         ("BACKGROUND", (0, 0), (0, 0), colors.HexColor("#ECFDF5")),
@@ -151,7 +151,7 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
         ("LEFTPADDING", (0, 0), (-1, -1), 10),
     ]))
     story.append(swot_table)
-    story.append(Spacer(1, 0.5*cm))
+    story.append(Spacer(1, 0.2*cm))
 
     # ── Footer ───────────────────────────────────────────────────────────────
     story.append(HRFlowable(width="100%", thickness=1, color=BRAND_PURPLE))

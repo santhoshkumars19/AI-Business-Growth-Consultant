@@ -464,7 +464,7 @@ Provide 6-8 specific, actionable recommendations tailored to the Indian market. 
 
 
 def generate_marketing_plan(metrics: dict) -> list:
-    """Generate a 30-day marketing plan."""
+    """Generate a 30-day marketing plan with exactly 3 plans a week."""
     try:
         prompt = f"""
 Create a 30-day marketing plan for a {metrics.get('industry')} business in {metrics.get('city')}, Tamil Nadu.
@@ -486,7 +486,7 @@ Return ONLY valid JSON array:
   }}
 ]
 ```
-Generate 20-30 day entries covering Instagram, WhatsApp, Google My Business, and offline marketing.
+Generate exactly 3 activities (plans) for each week, spread across different days (e.g. Week 1: Days 1, 3, 5; Week 2: Days 8, 10, 12; Week 3: Days 15, 17, 19; Week 4: Days 22, 24, 26). Total should be exactly 12 items.
 """
         response = _get_model().generate_content(prompt)
         result = _parse_json(response.text)
