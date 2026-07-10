@@ -15,6 +15,44 @@ export default function MarketingPlanPage() {
   const [view, setView] = useState<'month'|'week'>('month');
   const [activeWeek, setActiveWeek] = useState(0);
 
+  const [isAddingActivity, setIsAddingActivity] = useState(false);
+  const [newActTitle, setNewActTitle] = useState('');
+  const [newActType, setNewActType] = useState<ActivityType>('social');
+  const [newActPlatform, setNewActPlatform] = useState('Instagram');
+  const [newActBudget, setNewActBudget] = useState('Organic');
+  const [newActReach, setNewActReach] = useState('500-1,000');
+  const [newActCaption, setNewActCaption] = useState('');
+
+  const handleSaveNewActivity = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedDay || !newActTitle.trim()) return;
+    
+    const newActivity = {
+      type: newActType,
+      title: newActTitle,
+      platform: newActPlatform,
+      budget: newActBudget,
+      reach: newActReach,
+      caption: newActCaption
+    };
+
+    setPlan(prev => {
+      const updated = { ...prev };
+      if (!updated[selectedDay]) updated[selectedDay] = [];
+      updated[selectedDay] = [...updated[selectedDay], newActivity];
+      return updated;
+    });
+
+    // Reset fields
+    setNewActTitle('');
+    setNewActType('social');
+    setNewActPlatform('Instagram');
+    setNewActBudget('Organic');
+    setNewActReach('500-1,000');
+    setNewActCaption('');
+    setIsAddingActivity(false);
+  };
+
   useEffect(() => {
     const loadPlan = async () => {
       try {
@@ -206,25 +244,85 @@ export default function MarketingPlanPage() {
               <div className="empty-state">
                 <div className="empty-icon">📭</div>
                 <p style={{ color:'var(--text-muted)', fontSize:'0.875rem' }}>No activities planned for this day.</p>
-                <button className="btn btn-ghost btn-sm" style={{ marginTop:8 }}>＋ Add Activity</button>
+                <button onClick={() => setIsAddingActivity(true)} className="btn btn-ghost btn-sm" style={{ marginTop:8 }}>＋ Add Activity</button>
               </div>
-            ) : selectedActivities.map((a,i)=>(
-              <div key={i} style={{ padding:'14px 16px', borderRadius:12, border:`1px solid ${COLOR_MAP[a.type]}40`, background:`${COLOR_MAP[a.type]}10`, marginBottom:12 }}>
-                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
-                  <span style={{ fontSize:'0.75rem', fontWeight:700, padding:'2px 8px', borderRadius:99, background:COLOR_MAP[a.type], color:'#fff' }}>{LABEL_MAP[a.type]}</span>
-                  <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>{a.platform}</span>
-                </div>
-                <div style={{ fontWeight:600, fontSize:'0.9rem', marginBottom:8 }}>{a.title}</div>
-                <div style={{ fontSize:'0.8rem', color:'var(--text-secondary)', lineHeight:1.6, background:'var(--bg-surface)', padding:'10px 12px', borderRadius:8, marginBottom:10, fontStyle:'italic' }}>"{a.caption}"</div>
-                <div style={{ display:'flex', gap:12, fontSize:'0.78rem' }}>
-                  <span>💰 {a.budget}</span>
-                  <span>👁️ {a.reach} impressions</span>
-                </div>
+            ) : (
+              <div>
+                {selectedActivities.map((a,i)=>(
+                  <div key={i} style={{ padding:'14px 16px', borderRadius:12, border:`1px solid ${COLOR_MAP[a.type]}40`, background:`${COLOR_MAP[a.type]}10`, marginBottom:12 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
+                      <span style={{ fontSize:'0.75rem', fontWeight:700, padding:'2px 8px', borderRadius:99, background:COLOR_MAP[a.type], color:'#fff' }}>{LABEL_MAP[a.type]}</span>
+                      <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>{a.platform}</span>
+                    </div>
+                    <div style={{ fontWeight:600, fontSize:'0.9rem', marginBottom:8 }}>{a.title}</div>
+                    <div style={{ fontSize:'0.8rem', color:'var(--text-secondary)', lineHeight:1.6, background:'var(--bg-surface)', padding:'10px 12px', borderRadius:8, marginBottom:10, fontStyle:'italic' }}>"{a.caption}"</div>
+                    <div style={{ display:'flex', gap:12, fontSize:'0.78rem' }}>
+                      <span>💰 {a.budget}</span>
+                      <span>👁️ {a.reach} impressions</span>
+                    </div>
+                  </div>
+                ))}
+                <button onClick={() => setIsAddingActivity(true)} className="btn btn-ghost btn-sm" style={{ width:'100%', justifyContent:'center', marginTop:8 }}>＋ Add Another Activity</button>
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
+
+      {isAddingActivity && selectedDay && (
+        <div style={{ position:'fixed', top:0, left:0, width:'100%', height:'100%', background:'rgba(0,0,0,0.5)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, padding:16 }}>
+          <div className="card p-6" style={{ width:'100%', maxWidth:450, position:'relative', background:'var(--bg-surface)', border:'1px solid var(--border)' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:20 }}>
+              <h3 style={{ fontWeight:700, margin:0 }}>Add Activity for Day {selectedDay}</h3>
+              <button onClick={() => setIsAddingActivity(false)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:'1.5rem' }}>×</button>
+            </div>
+            
+            <form onSubmit={handleSaveNewActivity} style={{ display:'flex', flexDirection:'column', gap:12 }}>
+              <div>
+                <label style={{ display:'block', fontSize:'0.75rem', color:'var(--text-secondary)', marginBottom:4, fontWeight:600 }}>Activity Title</label>
+                <input className="input" style={{ width:'100%' }} value={newActTitle} onChange={e=>setNewActTitle(e.target.value)} placeholder="e.g. Launch Summer Special Post" required />
+              </div>
+              
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+                <div>
+                  <label style={{ display:'block', fontSize:'0.75rem', color:'var(--text-secondary)', marginBottom:4, fontWeight:600 }}>Category</label>
+                  <select className="input" style={{ width:'100%', background:'var(--bg-elevated)', color:'var(--text-primary)', border:'1px solid var(--border)', padding:'8px 10px', borderRadius:8 }} value={newActType} onChange={e=>setNewActType(e.target.value as ActivityType)}>
+                    <option value="social">Social Post</option>
+                    <option value="ad">Paid Ad</option>
+                    <option value="email">Email Campaign</option>
+                    <option value="promo">Promotion</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display:'block', fontSize:'0.75rem', color:'var(--text-secondary)', marginBottom:4, fontWeight:600 }}>Platform</label>
+                  <input className="input" style={{ width:'100%' }} value={newActPlatform} onChange={e=>setNewActPlatform(e.target.value)} placeholder="e.g. Instagram" required />
+                </div>
+              </div>
+              
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+                <div>
+                  <label style={{ display:'block', fontSize:'0.75rem', color:'var(--text-secondary)', marginBottom:4, fontWeight:600 }}>Budget</label>
+                  <input className="input" style={{ width:'100%' }} value={newActBudget} onChange={e=>setNewActBudget(e.target.value)} placeholder="e.g. Organic or ₹500" required />
+                </div>
+                <div>
+                  <label style={{ display:'block', fontSize:'0.75rem', color:'var(--text-secondary)', marginBottom:4, fontWeight:600 }}>Est. Reach</label>
+                  <input className="input" style={{ width:'100%' }} value={newActReach} onChange={e=>setNewActReach(e.target.value)} placeholder="e.g. 500-1,000" required />
+                </div>
+              </div>
+              
+              <div>
+                <label style={{ display:'block', fontSize:'0.75rem', color:'var(--text-secondary)', marginBottom:4, fontWeight:600 }}>Caption / Description</label>
+                <textarea className="input" style={{ width:'100%', minHeight:80, resize:'vertical' }} value={newActCaption} onChange={e=>setNewActCaption(e.target.value)} placeholder="Write description or post caption..." />
+              </div>
+              
+              <div style={{ display:'flex', gap:10, marginTop:10 }}>
+                <button type="button" onClick={() => setIsAddingActivity(false)} className="btn btn-ghost" style={{ flex:1, justifyContent:'center' }}>Cancel</button>
+                <button type="submit" className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>Save Activity</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
