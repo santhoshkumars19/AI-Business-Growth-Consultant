@@ -74,7 +74,7 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
     <div id="pdf-content" style={{ width:794, background:'#FFFFFF', color:'#1E293B', fontFamily:'Arial, Helvetica, sans-serif', padding:0, margin:0 }}>
 
       {/* ── Cover Page ─────────────────────────────── */}
-      <div style={{ minHeight:1123, background:'#FFFFFF', display:'flex', flexDirection:'column', padding:'60px 56px', boxSizing:'border-box', position:'relative', overflow:'hidden', borderBottom:'1px solid #E2E8F0' }}>
+      <div style={{ minHeight:1123, width:794, background:'#FFFFFF', display:'flex', flexDirection:'column', padding:'60px 56px', boxSizing:'border-box', position:'relative', overflow:'hidden', borderBottom:'1px solid #E2E8F0' }}>
 
         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:40 }}>
           <div style={{ width:36, height:36, borderRadius:9, background:'rgba(99,102,241,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:'#6366F1', fontWeight:'bold' }}>■</div>
@@ -123,7 +123,7 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
       </div>
 
       {/* ── Page 2: Summary + Score Breakdown ──────── */}
-      <div style={{ padding:'48px 56px', boxSizing:'border-box', minHeight:1123 }}>
+      <div style={{ padding:'48px 56px', boxSizing:'border-box', minHeight:1123, width:794 }}>
         {sectionTitle('Executive Summary', 'AI-generated overview of your business performance')}
         <p style={{ fontSize:12, color:'#374151', lineHeight:1.8, background:'#F8FAFC', border:'1px solid #E2E8F0', borderRadius:10, padding:'16px 20px', marginBottom:28 }}>
           {analysis.summary || 'No summary available.'}
@@ -157,7 +157,7 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
       </div>
 
       {/* ── Page 3: SWOT ────────────────────────────── */}
-      <div style={{ padding:'48px 56px', boxSizing:'border-box', minHeight:1123 }}>
+      <div style={{ padding:'48px 56px', boxSizing:'border-box', minHeight:1123, width:794 }}>
         {sectionTitle('SWOT Analysis', 'Strengths, Weaknesses, Opportunities & Threats')}
         <div style={{ display:'flex', flexWrap:'wrap', gap:12, marginBottom:28 }}>
           {swotBox('💪 Strengths',    analysis.swot?.strengths || [],    '#F0FDF4','#86EFAC','#16A34A')}
@@ -186,7 +186,7 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
       </div>
 
       {/* ── Page 4: SEO + Competitor + Marketing ──── */}
-      <div style={{ padding:'48px 56px', boxSizing:'border-box', minHeight:1123 }}>
+      <div style={{ padding:'48px 56px', boxSizing:'border-box', minHeight:1123, width:794 }}>
         {/* SEO Audit */}
         {analysis.seo_tips?.length > 0 && (
           <>
@@ -326,6 +326,7 @@ export default function PdfExportPage() {
           allowTaint: true,
           backgroundColor: '#ffffff',
           width: A4_W,
+          height: A4_H,
           windowWidth: A4_W,
           logging: false,
         });
@@ -333,10 +334,7 @@ export default function PdfExportPage() {
         if (i > 0) pdf.addPage([A4_W, A4_H], 'portrait');
 
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        const imgW = A4_W;
-        const imgH = (canvas.height / canvas.width) * imgW;
-
-        pdf.addImage(imgData, 'JPEG', 0, 0, imgW, Math.min(imgH, A4_H), '', 'FAST');
+        pdf.addImage(imgData, 'JPEG', 0, 0, A4_W, A4_H, '', 'FAST');
       }
 
       // Hide container immediately after capture
