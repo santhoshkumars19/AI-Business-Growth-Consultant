@@ -96,16 +96,8 @@ class FeedbackOut(FeedbackIn):
 
 class ForgotPasswordIn(BaseModel):
     email: EmailStr
-
-
-class ForgotPasswordOut(BaseModel):
-    message: str
-
-
-class ResetPasswordIn(BaseModel):
-    token: str
     new_password: str
 
 
-class ResetPasswordOut(BaseModel):
+class ForgotPasswordOut(BaseModel):
     message: str

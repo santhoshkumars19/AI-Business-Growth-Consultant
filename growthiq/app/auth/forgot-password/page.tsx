@@ -1,35 +1,110 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+
+function PasswordStrength({ password }: { password: string }) {
+  const requirements = [
+    password.length >= 8,
+    /[A-Z]/.test(password),
+    /[a-z]/.test(password),
+    /[0-9]/.test(password),
+    /[^A-Za-z0-9]/.test(password),
+  ];
+  const score = requirements.filter(Boolean).length;
+  const labels = ['', 'Very Weak', 'Weak', 'Fair', 'Strong', 'Very Strong'];
+  const colors = ['', 'var(--accent-danger)', 'var(--accent-danger)', 'var(--accent-warning)', 'var(--accent-primary)', 'var(--accent-success)'];
+
+  if (!password) return null;
+
+  return (
+    <div style={{ marginTop: 8 }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
+        {[1, 2, 3, 4, 5].map(i => (
+          <div key={i} style={{ flex: 1, height: 4, borderRadius: 99, background: i <= score ? colors[score] : 'var(--bg-elevated)', transition: 'all 0.3s ease' }} />
+        ))}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: '0.75rem', color: colors[score], fontWeight: 600 }}>{labels[score]}</span>
+        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{score}/5 Criteria Met</span>
+      </div>
+      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 4, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px 8px' }}>
+        <div style={{ color: requirements[0] ? 'var(--accent-success)' : '' }}>• Min 8 chars</div>
+        <div style={{ color: requirements[1] ? 'var(--accent-success)' : '' }}>• Uppercase (A-Z)</div>
+        <div style={{ color: requirements[2] ? 'var(--accent-success)' : '' }}>• Lowercase (a-z)</div>
+        <div style={{ color: requirements[3] ? 'var(--accent-success)' : '' }}>• Number (0-9)</div>
+        <div style={{ color: requirements[4] ? 'var(--accent-success)' : '', gridColumn: 'span 2' }}>• Special character (!@#$%^&*)</div>
+      </div>
+    </div>
+  );
+}
 
 export default function ForgotPasswordPage() {
   const { fetchWithAuth } = useAuth();
   const { theme, toggle } = useTheme();
+  const router = useRouter();
+
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!email) {
       setError('Please enter a valid email address.');
       return;
     }
+
+    // Client-side validations
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      setError('Password must contain at least one uppercase letter.');
+      return;
+    }
+    if (!/[a-z]/.test(password)) {
+      setError('Password must contain at least one lowercase letter.');
+      return;
+    }
+    if (!/[0-9]/.test(password)) {
+      setError('Password must contain at least one number.');
+      return;
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      setError('Password must contain at least one special character.');
+      return;
+    }
+    if (password !== confirm) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     setLoading(true);
     setError('');
     setSuccess('');
+
     try {
       const res = await fetchWithAuth('/auth/forgot-password', {
         method: 'POST',
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, new_password: password }),
       });
-      setSuccess(res.message || 'If an account exists, a reset link has been sent.');
-      setEmail('');
+      setSuccess(res.message || 'Password updated successfully.');
+      
+      // Auto redirect to Login page after 2 seconds
+      setTimeout(() => {
+        router.push('/auth/login');
+      }, 2000);
     } catch (err: any) {
-      setError(err?.message || 'Something went wrong. Please try again.');
+      setError(err?.message || 'Something went wrong. Please check your email or try again.');
     } finally {
       setLoading(false);
     }
@@ -43,11 +118,11 @@ export default function ForgotPasswordPage() {
         <div style={{ position: 'absolute', bottom: -80, left: -80, width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 420 }}>
           <div style={{ fontSize: '3.5rem', marginBottom: 20 }}>🔑</div>
-          <h2 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 800, color: '#fff', marginBottom: 16 }}>Forgot your password?</h2>
-          <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1rem', lineHeight: 1.7, marginBottom: 36 }}>No worries. Enter your registered email address and we will send you a secure link to reset your password.</p>
+          <h2 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 800, color: '#fff', marginBottom: 16 }}>Reset password instantly</h2>
+          <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1rem', lineHeight: 1.7, marginBottom: 36 }}>No email link required. Verify your registered email, choose a new strong password, and update it instantly.</p>
           <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderRadius: 12, padding: '16px 20px', textAlign: 'left' }}>
             <span style={{ fontSize: '0.85rem', color: '#fff', fontWeight: 500 }}>
-              🛡️ For security reasons, reset tokens expire after 15 minutes and can only be used once.
+              🛡️ Make sure you use a unique password of at least 8 characters.
             </span>
           </div>
         </div>
@@ -64,24 +139,64 @@ export default function ForgotPasswordPage() {
             <button onClick={toggle} className="btn btn-ghost btn-sm" style={{ fontSize: '1rem' }}>{theme === 'dark' ? '☀️' : '🌙'}</button>
           </div>
 
-          <h1 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.5rem, 4vw, 1.875rem)', fontWeight: 800, marginBottom: 6 }}>Reset password</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: 24 }}>Enter your email address to receive a secure password reset link.</p>
+          <h1 style={{ fontFamily: 'Outfit', fontSize: 'clamp(1.5rem, 4vw, 1.875rem)', fontWeight: 800, marginBottom: 6 }}>Forgot Password</h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: 24 }}>Update your password instantly by entering your details below.</p>
 
           {error && <div style={{ background: 'rgba(var(--accent-danger-rgb),0.1)', border: '1px solid var(--accent-danger)', borderRadius: 10, padding: '12px 16px', color: 'var(--accent-danger)', fontSize: '0.875rem', marginBottom: 20 }}>⚠️ {error}</div>}
           {success && <div style={{ background: 'rgba(var(--accent-success-rgb),0.1)', border: '1px solid var(--accent-success)', borderRadius: 10, padding: '12px 16px', color: 'var(--accent-success)', fontSize: '0.875rem', marginBottom: 20 }}>✅ {success}</div>}
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div className="input-group">
-              <label className="input-label">Email address</label>
+              <label className="input-label">Registered Email</label>
               <input className="input" type="email" placeholder="you@company.com" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="email" disabled={loading} />
             </div>
+
+            <div className="input-group">
+              <label className="input-label">New Password</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  className="input"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Create a strong password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  style={{ paddingRight: 40 }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.9rem', outline: 'none' }}
+                >
+                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+              <PasswordStrength password={password} />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Confirm New Password</label>
+              <input
+                className="input"
+                type="password"
+                placeholder="Repeat your password"
+                value={confirm}
+                onChange={e => setConfirm(e.target.value)}
+                required
+                disabled={loading}
+                style={{ borderColor: confirm && confirm !== password ? 'var(--accent-danger)' : '' }}
+              />
+              {confirm && confirm !== password && <div style={{ fontSize: '0.75rem', color: 'var(--accent-danger)', marginTop: 4 }}>Passwords do not match</div>}
+            </div>
+
             <button type="submit" className="btn btn-primary btn-lg btn-full" style={{ marginTop: 4 }} disabled={loading}>
-              {loading ? 'Sending request...' : 'Send Reset Link'}
+              {loading ? 'Updating Password...' : 'Update Password'}
             </button>
           </form>
 
           <p style={{ textAlign: 'center', fontSize: '0.9rem', marginTop: 24 }}>
-            Remembered your password? <Link href="/auth/login" className="link" style={{ fontWeight: 600 }}>Sign back in →</Link>
+            Go back to <Link href="/auth/login" className="link" style={{ fontWeight: 600 }}>Sign In</Link>
           </p>
         </div>
       </div>
