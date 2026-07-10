@@ -22,8 +22,29 @@ const PLAN: Record<number, { type: ActivityType; title: string; platform: string
 export default function MarketingPlanPage() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [view, setView] = useState<'month'|'week'>('month');
+  const [activeWeek, setActiveWeek] = useState(0);
+
   const days = Array.from({length:30},(_,i)=>i+1);
   const weekDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  const WEEK_LABELS = [
+    'Week 1: July 1 – July 5',
+    'Week 2: July 6 – July 12',
+    'Week 3: July 13 – July 19',
+    'Week 4: July 20 – July 26',
+    'Week 5: July 27 – July 30',
+  ];
+
+  const handleSetView = (v: 'month' | 'week') => {
+    setView(v);
+    if (v === 'week') {
+      const w = selectedDay ? Math.floor((selectedDay + 1) / 7) : 0;
+      setActiveWeek(w);
+    }
+  };
+
+  const handlePrevWeek = () => setActiveWeek(w => Math.max(0, w - 1));
+  const handleNextWeek = () => setActiveWeek(w => Math.min(4, w + 1));
   const budgetTotal = Object.values(PLAN).flat().reduce((a,p)=>a+(p.budget.startsWith('₹')?parseInt(p.budget.slice(1).replace(',','')):0),0);
   const activityCount = Object.values(PLAN).flat().length;
   const selectedActivities = selectedDay ? (PLAN[selectedDay] || []) : [];
@@ -37,7 +58,7 @@ export default function MarketingPlanPage() {
         </div>
         <div style={{ display:'flex', gap:10 }}>
           {(['month','week'] as const).map(v=>(
-            <button key={v} onClick={()=>setView(v)} className="btn btn-sm" style={{ background:view===v?'var(--accent-primary)':'var(--bg-elevated)', color:view===v?'#fff':'var(--text-secondary)', textTransform:'capitalize' }}>{v} View</button>
+            <button key={v} onClick={()=>handleSetView(v)} className="btn btn-sm" style={{ background:view===v?'var(--accent-primary)':'var(--bg-elevated)', color:view===v?'#fff':'var(--text-secondary)', textTransform:'capitalize' }}>{v} View</button>
           ))}
         </div>
       </div>
@@ -73,21 +94,60 @@ export default function MarketingPlanPage() {
             {weekDays.map(d=><div key={d} style={{ textAlign:'center', fontSize:'0.72rem', fontWeight:600, color:'var(--text-muted)', padding:'6px 0' }}>{d}</div>)}
           </div>
           {/* Day cells — start week on Mon (July 2026 starts Wed, so offset=2) */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:4 }}>
-            {[...Array(2)].map((_,i)=><div key={`e${i}`} />)}
-            {days.map(d=>{
-              const acts = PLAN[d] || [];
-              const isSelected = selectedDay===d;
-              return (
-                <div key={d} onClick={()=>setSelectedDay(d===selectedDay?null:d)} className="calendar-day" style={{ borderColor: isSelected ? 'var(--accent-primary)' : acts.length ? 'rgba(var(--accent-primary-rgb),0.3)' : 'var(--border)', background: isSelected ? 'rgba(var(--accent-primary-rgb),0.1)' : 'var(--bg-surface)' }}>
-                  <div style={{ fontSize:'0.75rem', fontWeight:600, color:isSelected?'var(--accent-primary)':'var(--text-secondary)', marginBottom:4 }}>{d}</div>
-                  <div style={{ display:'flex', gap:3, flexWrap:'wrap' }}>
-                    {acts.map((a,i)=><div key={i} style={{ width:8, height:8, borderRadius:'50%', background:COLOR_MAP[a.type] }} />)}
+          {view === 'month' ? (
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:4 }}>
+              {[...Array(2)].map((_,i)=><div key={`e${i}`} />)}
+              {days.map(d=>{
+                const acts = PLAN[d] || [];
+                const isSelected = selectedDay===d;
+                return (
+                  <div key={d} onClick={()=>{setSelectedDay(d===selectedDay?null:d); setActiveWeek(Math.floor((d + 1) / 7));}} className="calendar-day" style={{ borderColor: isSelected ? 'var(--accent-primary)' : acts.length ? 'rgba(var(--accent-primary-rgb),0.3)' : 'var(--border)', background: isSelected ? 'rgba(var(--accent-primary-rgb),0.1)' : 'var(--bg-surface)' }}>
+                    <div style={{ fontSize:'0.75rem', fontWeight:600, color:isSelected?'var(--accent-primary)':'var(--text-secondary)', marginBottom:4 }}>{d}</div>
+                    <div style={{ display:'flex', gap:3, flexWrap:'wrap' }}>
+                      {acts.map((a,i)=><div key={i} style={{ width:8, height:8, borderRadius:'50%', background:COLOR_MAP[a.type] }} />)}
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div>
+              {/* Week Navigation Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {WEEK_LABELS[activeWeek]}
+                </span>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button onClick={handlePrevWeek} disabled={activeWeek === 0} className="btn btn-sm" style={{ padding: '4px 10px', fontSize: '0.75rem', border: '1px solid var(--border)' }}>← Prev</button>
+                  <button onClick={handleNextWeek} disabled={activeWeek === 4} className="btn btn-sm" style={{ padding: '4px 10px', fontSize: '0.75rem', border: '1px solid var(--border)' }}>Next →</button>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+              
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:4 }}>
+                {Array.from({ length: 7 }).map((_, i) => {
+                  const cellIndex = activeWeek * 7 + i;
+                  if (cellIndex < 2) {
+                    return <div key={`e${cellIndex}`} />;
+                  }
+                  const d = cellIndex - 1;
+                  if (d > 30) {
+                    return <div key={`e${cellIndex}`} />;
+                  }
+                  
+                  const acts = PLAN[d] || [];
+                  const isSelected = selectedDay===d;
+                  return (
+                    <div key={d} onClick={()=>setSelectedDay(d===selectedDay?null:d)} className="calendar-day" style={{ borderColor: isSelected ? 'var(--accent-primary)' : acts.length ? 'rgba(var(--accent-primary-rgb),0.3)' : 'var(--border)', background: isSelected ? 'rgba(var(--accent-primary-rgb),0.1)' : 'var(--bg-surface)' }}>
+                      <div style={{ fontSize:'0.75rem', fontWeight:600, color:isSelected?'var(--accent-primary)':'var(--text-secondary)', marginBottom:4 }}>{d}</div>
+                      <div style={{ display:'flex', gap:3, flexWrap:'wrap' }}>
+                        {acts.map((a,i)=><div key={i} style={{ width:8, height:8, borderRadius:'50%', background:COLOR_MAP[a.type] }} />)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Day Detail Panel */}
