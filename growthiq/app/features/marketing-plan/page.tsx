@@ -9,6 +9,9 @@ const LABEL_MAP: Record<ActivityType, string> = { social:'Social Post', ad:'Paid
 
 export default function MarketingPlanPage() {
   const { fetchWithAuth, user } = useAuth();
+  const userIndustry = user?.businessData?.industry || 'Food & Beverage';
+  const userBusinessName = user?.businessData?.business_name || 'Your Business';
+
   const [plan, setPlan] = useState<Record<number, { type: ActivityType; title: string; platform: string; budget: string; reach: string; caption: string }[]>>({});
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
