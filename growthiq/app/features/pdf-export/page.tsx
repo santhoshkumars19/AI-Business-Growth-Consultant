@@ -70,178 +70,216 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
     </div>
   );
 
+  const getTimeline = (priority: string) => {
+    if (priority === 'high') return '1-2 Weeks';
+    if (priority === 'medium') return '1 Month';
+    return '2-3 Months';
+  };
+
+  const getROI = (priority: string) => {
+    if (priority === 'high') return 'High (20%+)';
+    if (priority === 'medium') return 'Moderate (10%+)';
+    return 'Low (5%+)';
+  };
+
   return (
     <div id="pdf-content" style={{ width:794, background:'#FFFFFF', color:'#1E293B', fontFamily:'Arial, Helvetica, sans-serif', padding:0, margin:0 }}>
 
-      {/* ── Cover Page ─────────────────────────────── */}
-      <div style={{ minHeight:1123, width:794, background:'#FFFFFF', display:'flex', flexDirection:'column', padding:'60px 56px', boxSizing:'border-box', position:'relative', overflow:'hidden', borderBottom:'1px solid #E2E8F0' }}>
-
-        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:40 }}>
-          <div style={{ width:36, height:36, borderRadius:9, background:'rgba(99,102,241,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:'#6366F1', fontWeight:'bold' }}>■</div>
-          <span style={{ color:'#6366F1', fontWeight:800, fontSize:16, letterSpacing:'0.02em' }}>GrowthIQ AI</span>
+      {/* ── PAGE 1: Business Overview ─────────────────────────────── */}
+      <div style={{ height:1123, width:794, background:'#FFFFFF', display:'flex', flexDirection:'column', padding:'60px 56px', boxSizing:'border-box', position:'relative', overflow:'hidden', borderBottom:'1px solid #E2E8F0' }}>
+        {/* Top Header */}
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:40 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <div style={{ width:36, height:36, borderRadius:9, background:'rgba(99,102,241,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:'#6366F1', fontWeight:'bold' }}>■</div>
+            <span style={{ color:'#6366F1', fontWeight:800, fontSize:16, letterSpacing:'0.02em' }}>GrowthIQ AI</span>
+          </div>
+          <div style={{ fontSize:10, color:'#94A3B8', fontWeight:600 }}>CONFIDENTIAL REPORT</div>
         </div>
 
-        {/* Centered Main Block to distribute whitespace beautifully */}
-        <div style={{ flex:1, display:'flex', flexDirection:'column', justifyContent:'center', gap:40, marginBottom:40 }}>
-          <div>
-            <div style={{ display:'inline-block', background:'rgba(99,102,241,0.08)', border:'1px solid rgba(99,102,241,0.2)', borderRadius:99, padding:'5px 16px', fontSize:11, color:'#6366F1', fontWeight:600, marginBottom:20, letterSpacing:'0.06em' }}>BUSINESS ANALYSIS REPORT</div>
-            <h1 style={{ fontFamily:'Georgia, serif', fontSize:34, fontWeight:700, color:'#0F172A', lineHeight:1.25, margin:'0 0 12px 0' }}>
-              {biz?.business_name || 'Your Business'}<br />
-              <span style={{ fontWeight:400, fontSize:22, color:'#6366F1' }}>Growth Intelligence Report</span>
-            </h1>
-            <p style={{ color:'#64748B', fontSize:13, margin:0 }}>
-              {biz?.industry} · {biz?.city}, {biz?.state} · Generated {date}
-            </p>
-          </div>
+        {/* Title Block */}
+        <div style={{ marginBottom:30 }}>
+          <h1 style={{ fontFamily:'Georgia, serif', fontSize:26, fontWeight:700, color:'#0F172A', lineHeight:1.25, margin:'0 0 6px 0' }}>
+            AI Business Growth Report
+          </h1>
+          <div style={{ height:3, width:80, background:'#6366F1', borderRadius:2, marginBottom:16 }} />
+        </div>
 
-          {/* Health Score on cover */}
-          <div style={{ display:'flex', alignItems:'center', gap:32, background:'#F8FAFC', borderRadius:16, padding:'24px 32px', border:'1px solid #E2E8F0' }}>
-            <div style={{ textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minWidth:90 }}>
+        {/* 1. Business Information */}
+        <div style={{ background:'#F8FAFC', borderRadius:12, padding:'16px 20px', border:'1px solid #E2E8F0', marginBottom:28 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:12 }}>
+            <div>
+              <span style={{ fontSize:10, color:'#94A3B8', display:'block', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:600 }}>Business Name</span>
+              <span style={{ fontSize:13, fontWeight:700, color:'#0F172A' }}>{biz?.business_name || 'Your Business'}</span>
+            </div>
+            <div>
+              <span style={{ fontSize:10, color:'#94A3B8', display:'block', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:600 }}>Industry</span>
+              <span style={{ fontSize:13, fontWeight:700, color:'#0F172A' }}>{biz?.industry || 'N/A'}</span>
+            </div>
+            <div>
+              <span style={{ fontSize:10, color:'#94A3B8', display:'block', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:600 }}>Location</span>
+              <span style={{ fontSize:13, fontWeight:700, color:'#0F172A' }}>{biz?.city || 'N/A'}, {biz?.state || 'N/A'}</span>
+            </div>
+            <div>
+              <span style={{ fontSize:10, color:'#94A3B8', display:'block', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:600 }}>Generated Date</span>
+              <span style={{ fontSize:13, fontWeight:700, color:'#0F172A' }}>{date}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Business Health Score */}
+        <div style={{ marginBottom:28 }}>
+          <h2 style={{ fontFamily:'Georgia, serif', fontSize:16, fontWeight:700, color:'#1E293B', marginBottom:12 }}>Business Health Summary</h2>
+          <div style={{ display:'flex', alignItems:'center', gap:32, background:'#F8FAFC', borderRadius:16, padding:'20px 24px', border:'1px solid #E2E8F0' }}>
+            <div style={{ textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', flexShrink:0, minWidth:90 }}>
               <div style={{ fontSize:44, fontWeight:800, color:sc, lineHeight:1.1 }}>{analysis.health_score}</div>
-              <div style={{ fontSize:11, color:'#64748B', marginTop:4 }}>Health Score / 100</div>
-            </div>
-            <div style={{ width:1, height:70, background:'#E2E8F0' }} />
-            <div style={{ display:'flex', flexDirection:'column', gap:10, flex:1 }}>
-              {[
-                ['Monthly Revenue', `₹${(biz?.monthly_revenue||0).toLocaleString('en-IN')}`],
-                ['Net Profit Margin', `${margin}%`],
-                ['Active Customers', `${biz?.monthly_customers||0}`],
-                ['Team Size', `${biz?.employee_count||1} employees`],
-              ].map(([k,v]) => (
-                <div key={k} style={{ display:'flex', justifyContent:'space-between', fontSize:12 }}>
-                  <span style={{ color:'#64748B' }}>{k}</span>
-                  <span style={{ color:'#0F172A', fontWeight:700 }}>{v}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div style={{ fontSize:10, color:'#94A3B8', textAlign:'center' }}>
-          Confidential · Powered by Gemini AI · GrowthIQ AI Platform · {new Date().getFullYear()}
-        </div>
-      </div>
-
-      {/* ── Page 2: Summary + Score Breakdown + Competitor ──────── */}
-      <div style={{ padding:'48px 56px', boxSizing:'border-box', minHeight:1123, width:794 }}>
-        {sectionTitle('Executive Summary', 'AI-generated overview of your business performance')}
-        <p style={{ fontSize:11.5, color:'#374151', lineHeight:1.7, background:'#F8FAFC', border:'1px solid #E2E8F0', borderRadius:10, padding:'12px 16px', marginBottom:20 }}>
-          {analysis.summary || 'No summary available.'}
-        </p>
-
-        {sectionTitle('Business Health Score', 'Performance across 4 key business dimensions')}
-        <div style={{ display:'flex', alignItems:'center', gap:32, marginBottom:20, background:'#F8FAFC', borderRadius:14, padding:'16px 20px', border:'1px solid #E2E8F0' }}>
-          <div style={{ textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', flexShrink:0, minWidth:100 }}>
-            <div style={{ fontSize:44, fontWeight:800, color:sc, lineHeight:1.1 }}>{analysis.health_score}</div>
-            <div style={{ fontSize:9, color:'#9CA3AF', marginTop:4, letterSpacing:'0.05em' }}>OUT OF 100</div>
-            <div style={{ marginTop:8, padding:'4px 12px', background:`${sc}20`, color:sc, borderRadius:99, fontSize:10, fontWeight:700 }}>
-              {analysis.health_score >= 70 ? 'STRONG' : analysis.health_score >= 40 ? 'MODERATE' : 'CRITICAL'}
-            </div>
-          </div>
-          <div style={{ flex:1 }}>
-            {Object.entries(analysis.score_breakdown || {}).map(([k, v]) => progressBar(k, v as number))}
-          </div>
-        </div>
-
-        {sectionTitle('Key Business Metrics')}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:10, marginBottom:20 }}>
-          {cell('Monthly Revenue', `₹${(biz?.monthly_revenue||0).toLocaleString('en-IN')}`, '#10B981')}
-          {cell('Monthly Expenses', `₹${(biz?.monthly_expenses||0).toLocaleString('en-IN')}`, '#F59E0B')}
-          {cell('Net Profit', `₹${profit.toLocaleString('en-IN')}`, profit >= 0 ? '#10B981' : '#EF4444')}
-          {cell('Profit Margin', `${margin}%`, margin >= 20 ? '#10B981' : margin >= 0 ? '#F59E0B' : '#EF4444')}
-          {cell('Customers/Month', `${biz?.monthly_customers||0}`, '#6366F1')}
-          {cell('Avg Order Value', `₹${(biz?.avg_order_value||0).toLocaleString('en-IN')}`, '#6366F1')}
-          {cell('Employees', `${biz?.employee_count||1}`, '#374151')}
-          {cell('Online Presence', biz?.online_presence || 'None', '#374151')}
-        </div>
-
-        {/* Competitor Insights */}
-        {analysis.competitor_insights && (
-          <>
-            {sectionTitle('Competitor Analysis', 'Market positioning and competitive intelligence')}
-            <div style={{ background:'#F8FAFC', borderRadius:12, padding:'14px 16px', border:'1px solid #E2E8F0' }}>
-              <div style={{ fontWeight:700, fontSize:11.5, color:'#1E293B', marginBottom:6 }}>Market Position</div>
-              <p style={{ fontSize:10.8, color:'#374151', lineHeight:1.6, marginBottom:10 }}>{analysis.competitor_insights.market_position}</p>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
-                <div>
-                  <div style={{ fontWeight:700, fontSize:10.5, color:'#16A34A', marginBottom:4 }}>✅ Your Advantages</div>
-                  {analysis.competitor_insights.advantages?.slice(0,3).map((a, i) => (
-                    <div key={i} style={{ fontSize:10, color:'#374151', padding:'2px 0', borderBottom:'1px solid #F1F5F9' }}>• {a}</div>
-                  ))}
-                </div>
-                <div>
-                  <div style={{ fontWeight:700, fontSize:10.5, color:'#DC2626', marginBottom:4 }}>⚠️ Key Gaps</div>
-                  {analysis.competitor_insights.key_gaps?.slice(0,3).map((g, i) => (
-                    <div key={i} style={{ fontSize:10, color:'#374151', padding:'2px 0', borderBottom:'1px solid #F1F5F9' }}>• {g}</div>
-                  ))}
-                </div>
+              <div style={{ fontSize:10, color:'#9CA3AF', marginTop:4, letterSpacing:'0.05em', fontWeight:600 }}>OUT OF 100</div>
+              <div style={{ marginTop:8, padding:'4px 12px', background:`${sc}20`, color:sc, borderRadius:99, fontSize:10, fontWeight:700 }}>
+                {analysis.health_score >= 70 ? 'STRONG' : analysis.health_score >= 40 ? 'MODERATE' : 'CRITICAL'}
               </div>
             </div>
-          </>
-        )}
+            <div style={{ width:1, height:70, background:'#E2E8F0' }} />
+            <div style={{ flex:1 }}>
+              <p style={{ fontSize:11.5, color:'#374151', lineHeight:1.6, margin:0 }}>
+                {analysis.summary || 'No summary available.'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Key Business Metrics */}
+        <div style={{ flex:1 }}>
+          <h2 style={{ fontFamily:'Georgia, serif', fontSize:16, fontWeight:700, color:'#1E293B', marginBottom:12 }}>Key Business Metrics</h2>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:12 }}>
+            {cell('Monthly Revenue', `₹${(biz?.monthly_revenue||0).toLocaleString('en-IN')}`, '#10B981')}
+            {cell('Monthly Expenses', `₹${(biz?.monthly_expenses||0).toLocaleString('en-IN')}`, '#F59E0B')}
+            {cell('Net Profit', `₹${profit.toLocaleString('en-IN')}`, profit >= 0 ? '#10B981' : '#EF4444')}
+            {cell('Profit Margin', `${margin}%`, margin >= 20 ? '#10B981' : margin >= 0 ? '#F59E0B' : '#EF4444')}
+            {cell('Customers', `${biz?.monthly_customers||0}`, '#6366F1')}
+            {cell('Growth Rate', `${biz?.growth_rate || 0}%`, '#6366F1')}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ fontSize:10, color:'#94A3B8', textAlign:'center', marginTop:20 }}>
+          Confidential · Powered by Gemini AI · Page 1 of 3
+        </div>
       </div>
 
-      {/* ── Page 3: SWOT + AI Recs + SEO + Marketing Plan ──────── */}
-      <div style={{ padding:'48px 56px', boxSizing:'border-box', minHeight:1123, width:794 }}>
-        {sectionTitle('SWOT Analysis', 'Strengths, Weaknesses, Opportunities & Threats')}
-        <div style={{ display:'flex', flexWrap:'wrap', gap:10, marginBottom:20 }}>
+      {/* ── PAGE 2: Business Analysis ────────────────────────────── */}
+      <div style={{ height:1123, width:794, background:'#FFFFFF', display:'flex', flexDirection:'column', padding:'60px 56px', boxSizing:'border-box', position:'relative', overflow:'hidden', borderBottom:'1px solid #E2E8F0' }}>
+        {/* Top Header */}
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:40 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <div style={{ width:36, height:36, borderRadius:9, background:'rgba(99,102,241,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:'#6366F1', fontWeight:'bold' }}>■</div>
+            <span style={{ color:'#6366F1', fontWeight:800, fontSize:16, letterSpacing:'0.02em' }}>GrowthIQ AI</span>
+          </div>
+          <div style={{ fontSize:10, color:'#94A3B8', fontWeight:600 }}>BUSINESS ANALYSIS</div>
+        </div>
+
+        {/* Title */}
+        <div style={{ marginBottom:30 }}>
+          <h2 style={{ fontFamily:'Georgia, serif', fontSize:20, fontWeight:700, color:'#0F172A', margin:'0 0 6px 0' }}>
+            SWOT & Performance Analysis
+          </h2>
+          <div style={{ height:3, width:60, background:'#6366F1', borderRadius:2 }} />
+        </div>
+
+        {/* SWOT Analysis */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:16, marginBottom:40 }}>
           {swotBox('💪 Strengths',    analysis.swot?.strengths || [],    '#F0FDF4','#86EFAC','#16A34A')}
           {swotBox('⚠️ Weaknesses',  analysis.swot?.weaknesses || [],   '#FFF1F2','#FCA5A5','#DC2626')}
           {swotBox('🚀 Opportunities',analysis.swot?.opportunities || [],'#EFF6FF','#93C5FD','#2563EB')}
           {swotBox('🛡️ Threats',      analysis.swot?.threats || [],      '#FFFBEB','#FCD34D','#D97706')}
         </div>
 
-        {/* AI Recommendations */}
-        {sectionTitle('AI Recommendations', 'Data-backed growth actions')}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:20 }}>
-          {(analysis.recommendations || []).slice(0, 4).map((rec, i) => (
-            <div key={i} style={{ background:'#F8FAFC', borderRadius:10, padding:'10px 12px', border:`1px solid ${rec.priority==='high'?'#FCA5A5':rec.priority==='medium'?'#FCD34D':'#86EFAC'}`, borderLeft:`3.5px solid ${rec.priority==='high'?'#EF4444':rec.priority==='medium'?'#F59E0B':'#10B981'}` }}>
-              <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
-                <span style={{ fontSize:9.5, fontWeight:700, color: rec.priority==='high'?'#EF4444':rec.priority==='medium'?'#F59E0B':'#10B981', background: rec.priority==='high'?'#FFF1F2':rec.priority==='medium'?'#FFFBEB':'#F0FDF4', padding:'1px 6px', borderRadius:99, textTransform:'uppercase' }}>
-                  {rec.priority === 'high' ? '🔴 High' : rec.priority === 'medium' ? '🟡 Med' : '🟢 Win'}
+        {/* AI Business Summary */}
+        <div style={{ flex:1 }}>
+          <h3 style={{ fontFamily:'Georgia, serif', fontSize:16, fontWeight:700, color:'#1E293B', marginBottom:12 }}>
+            AI Business Summary
+          </h3>
+          <div style={{ background:'#F8FAFC', borderRadius:12, padding:'24px', border:'1px solid #E2E8F0', lineHeight:1.7 }}>
+            <p style={{ fontSize:11.5, color:'#374151', margin:0 }}>
+              {analysis.summary || 'No summary available.'}
+            </p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ fontSize:10, color:'#94A3B8', textAlign:'center', marginTop:20 }}>
+          Confidential · Powered by Gemini AI · Page 2 of 3
+        </div>
+      </div>
+
+      {/* ── PAGE 3: AI Recommendations ────────────────────────────── */}
+      <div style={{ height:1123, width:794, background:'#FFFFFF', display:'flex', flexDirection:'column', padding:'60px 56px', boxSizing:'border-box', position:'relative', overflow:'hidden' }}>
+        {/* Top Header */}
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:40 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <div style={{ width:36, height:36, borderRadius:9, background:'rgba(99,102,241,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:'#6366F1', fontWeight:'bold' }}>■</div>
+            <span style={{ color:'#6366F1', fontWeight:800, fontSize:16, letterSpacing:'0.02em' }}>GrowthIQ AI</span>
+          </div>
+          <div style={{ fontSize:10, color:'#94A3B8', fontWeight:600 }}>RECOMMENDATIONS</div>
+        </div>
+
+        {/* Title */}
+        <div style={{ marginBottom:30 }}>
+          <h2 style={{ fontFamily:'Georgia, serif', fontSize:20, fontWeight:700, color:'#0F172A', margin:'0 0 6px 0' }}>
+            AI-Powered Recommendations
+          </h2>
+          <div style={{ height:3, width:60, background:'#6366F1', borderRadius:2 }} />
+        </div>
+
+        {/* Priority Recommendations */}
+        <div style={{ display:'flex', flexDirection:'column', gap:16, flex:1 }}>
+          {(analysis.recommendations || []).slice(0, 3).map((rec, i) => (
+            <div key={i} style={{ background:'#F8FAFC', borderRadius:12, padding:'16px 20px', border:`1px solid ${rec.priority==='high'?'#FCA5A5':rec.priority==='medium'?'#FCD34D':'#86EFAC'}`, borderLeft:`4px solid ${rec.priority==='high'?'#EF4444':rec.priority==='medium'?'#F59E0B':'#10B981'}` }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
+                <span style={{ fontSize:10, fontWeight:700, color: rec.priority==='high'?'#EF4444':rec.priority==='medium'?'#F59E0B':'#10B981', background: rec.priority==='high'?'#FFF1F2':rec.priority==='medium'?'#FFFBEB':'#F0FDF4', padding:'3px 10px', borderRadius:99, textTransform:'uppercase', letterSpacing:'0.04em' }}>
+                  {rec.priority === 'high' ? 'High Priority' : rec.priority === 'medium' ? 'Medium Priority' : 'Quick Win'}
                 </span>
-                <span style={{ fontSize:9, color:'#6B7280', background:'#F1F5F9', padding:'1px 6px', borderRadius:99, textTransform:'capitalize' }}>{rec.category}</span>
+                <span style={{ fontSize:10, color:'#6B7280', background:'#F1F5F9', padding:'3px 10px', borderRadius:99, textTransform:'capitalize' }}>
+                  {rec.category}
+                </span>
               </div>
-              <div style={{ fontWeight:700, fontSize:11, color:'#1E293B', marginBottom:2 }}>{rec.title}</div>
-              <div style={{ fontSize:10, color:'#6B7280', lineHeight:1.4 }}>{rec.description}</div>
+              
+              <div style={{ fontWeight:700, fontSize:13, color:'#1E293B', marginBottom:6 }}>
+                ✓ {rec.title}
+              </div>
+              <p style={{ fontSize:11.5, color:'#4B5563', lineHeight:1.5, margin:'0 0 12px 0' }}>
+                {rec.description}
+              </p>
+              
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:10, fontSize:10.5, borderTop:'1px solid #E2E8F0', paddingTop:10 }}>
+                <div>
+                  <span style={{ color:'#9CA3AF', display:'block', fontSize:9, textTransform:'uppercase' }}>Expected Impact</span>
+                  <span style={{ fontWeight:600, color:'#10B981' }}>{rec.impact || 'Significant Improvement'}</span>
+                </div>
+                <div>
+                  <span style={{ color:'#9CA3AF', display:'block', fontSize:9, textTransform:'uppercase' }}>Timeline</span>
+                  <span style={{ fontWeight:600, color:'#374151' }}>{getTimeline(rec.priority)}</span>
+                </div>
+                <div>
+                  <span style={{ color:'#9CA3AF', display:'block', fontSize:9, textTransform:'uppercase' }}>Expected ROI</span>
+                  <span style={{ fontWeight:600, color:'#6366F1' }}>{getROI(rec.priority)}</span>
+                </div>
+              </div>
             </div>
           ))}
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
-          {/* SEO Audit */}
-          <div>
-            {sectionTitle('SEO Audit Tips')}
-            {analysis.seo_tips?.length > 0 && (
-              <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                {analysis.seo_tips.slice(0, 4).map((s, i) => (
-                  <div key={i} style={{ display:'flex', gap:8, padding:'8px 10px', background:'#F8FAFC', borderRadius:8, border:'1px solid #E2E8F0' }}>
-                    <div style={{ width:18, height:18, borderRadius:'50%', background:'#6366F1', color:'#fff', fontSize:9, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1 }}>{i+1}</div>
-                    <div style={{ fontSize:10, fontWeight:600, color:'#1E293B', lineHeight:1.3 }}>{s.tip}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        {/* Business Growth Conclusion */}
+        <div style={{ marginTop:20, background:'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(16,185,129,0.06))', border:'1px solid rgba(99,102,241,0.2)', borderRadius:12, padding:'16px 20px', marginBottom:30 }}>
+          <h3 style={{ fontSize:12, fontWeight:700, color:'#6366F1', margin:'0 0 6px 0', textTransform:'uppercase', letterSpacing:'0.05em' }}>
+            Business Growth Conclusion
+          </h3>
+          <p style={{ fontSize:11, color:'#374151', lineHeight:1.6, margin:0 }}>
+            By focusing on the immediate high-priority growth recommendations and maintaining systematic cost discipline, {biz?.business_name || 'your business'} is positioned to unlock up to 20%+ in operational efficiency and expand search visibility, driving sustainable long-term revenue gains.
+          </p>
+        </div>
 
-          {/* Marketing Plan */}
-          <div>
-            {sectionTitle('30-Day Marketing Plan')}
-            {analysis.marketing_plan?.length > 0 && (
-              <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                {analysis.marketing_plan.slice(0, 3).map((week, i) => (
-                  <div key={i} style={{ background:'#F8FAFC', borderRadius:8, padding:'8px 12px', border:'1px solid #E2E8F0', borderLeft:`3.5px solid ${barColor}` }}>
-                    <div style={{ fontWeight:700, fontSize:10.5, color:'#1E293B', marginBottom:2 }}>Week {week.week}: {week.strategy}</div>
-                    <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
-                      {week.tactics?.slice(0,2).map((t, ti) => (
-                        <span key={ti} style={{ fontSize:8.5, color:'#6366F1', background:'#EEF2FF', padding:'1px 6px', borderRadius:99 }}>• {t}</span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        {/* Footer */}
+        <div style={{ fontSize:10, color:'#94A3B8', textAlign:'center' }}>
+          Confidential · Powered by Gemini AI · Page 3 of 3
         </div>
       </div>
     </div>
