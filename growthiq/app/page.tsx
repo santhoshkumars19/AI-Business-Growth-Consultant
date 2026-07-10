@@ -46,10 +46,12 @@ export default function LandingPage() {
         {/* Brand */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, textDecoration: 'none' }}>
           <div style={{ width: 30, height: 30, borderRadius: 7, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>⚡</div>
-          <span className="hide-mobile" style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
+          {/* Brand name — visible on ALL screen sizes including mobile */}
+          <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
             GrowthIQ<span style={{ color: 'var(--accent-primary)' }}> AI</span>
           </span>
         </Link>
+
 
         {/* Desktop nav links */}
         <div className="hide-mobile-flex" style={{ alignItems: 'center', gap: 4, flex: 1, justifyContent: 'center' }}>
