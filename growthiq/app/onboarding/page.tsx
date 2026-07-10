@@ -218,7 +218,7 @@ export default function OnboardingPage() {
                 {['1','10','25','50','100','200+'].map(l => <span key={l} style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{l}</span>)}
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 14, marginTop: 8 }}>
+            <div className="onboarding-buttons" style={{ display: 'flex', gap: 14, marginTop: 8 }}>
               <button type="button" className="btn btn-ghost btn-lg" onClick={() => setStep(1)} style={{ flex: 1 }}>← Back</button>
               <button type="submit" className="btn btn-primary btn-lg" style={{ flex: 2 }}>Analyse My Business 🚀</button>
             </div>

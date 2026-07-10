@@ -1272,3 +1272,14 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
     padding-bottom: 90px !important;
   }
 }
+
+@media (max-width: 580px) {
+  .onboarding-buttons {
+    flex-direction: column-reverse !important;
+    gap: 10px !important;
+  }
+  .onboarding-buttons button {
+    width: 100% !important;
+    flex: none !important;
+  }
+}
