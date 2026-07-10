@@ -21,7 +21,14 @@ class UserOut(BaseModel):
     email: str
     plan: str
     role: str
+    profile_picture: Optional[str] = None
+    auth_provider: Optional[str] = "local"
+    last_login: Optional[datetime] = None
     created_at: Optional[datetime] = None
+
+
+class GoogleLoginIn(BaseModel):
+    credential: str
 
 
 class TokenOut(BaseModel):

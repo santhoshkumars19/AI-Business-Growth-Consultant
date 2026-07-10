@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS users (
     plan TEXT DEFAULT 'starter' CHECK (plan IN ('starter', 'growth', 'scale')),
     role TEXT DEFAULT 'user' CHECK (role IN ('user', 'admin')),
     is_active BOOLEAN DEFAULT TRUE,
+    profile_picture TEXT,
+    auth_provider TEXT DEFAULT 'local',
+    last_login TIMESTAMPTZ DEFAULT NOW(),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

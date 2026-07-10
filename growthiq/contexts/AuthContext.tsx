@@ -41,6 +41,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<AuthUser>;
   register: (email: string, password: string, name: string, role?: string) => Promise<void>;
+  loginWithGoogle: (credential: string) => Promise<AuthUser>;
   logout: () => void;
   saveBusinessData: (data: BusinessData) => Promise<void>;
   fetchWithAuth: (endpoint: string, options?: RequestInit) => Promise<any>;
@@ -146,6 +147,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(data.user);
   };
 
+  const loginWithGoogle = async (credential: string): Promise<AuthUser> => {
+    const data = await fetchWithAuth('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential }),
+    });
+
+    localStorage.setItem('growthiq_token', data.access_token);
+    
+    let businessData;
+    try {
+      businessData = await fetchWithAuth('/business');
+    } catch (e) {
+      // ignore
+    }
+
+    const authUser: AuthUser = {
+      ...data.user,
+      businessData,
+    };
+
+    setUser(authUser);
+    return authUser;
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('growthiq_token');
@@ -162,7 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, saveBusinessData, fetchWithAuth }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, loginWithGoogle, logout, saveBusinessData, fetchWithAuth }}>
       {children}
     </AuthContext.Provider>
   );
