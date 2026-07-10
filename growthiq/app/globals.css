@@ -29,8 +29,8 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
-  --sidebar-width: 240px;
-  --sidebar-collapsed: 64px;
+  --sidebar-width: 260px;
+  --sidebar-collapsed: 68px;
   --topbar-height: 64px;
   color-scheme: light;
 }
@@ -445,6 +445,8 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
   display: flex;
   min-height: 100vh;
 }
+
+/* ── Sidebar base ── */
 .sidebar {
   width: var(--sidebar-width);
   min-height: 100vh;
@@ -456,18 +458,35 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
   left: 0;
   top: 0;
   z-index: 100;
-  transition: width 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  /* Smooth collapse + mobile slide */
+  transition: width 0.28s cubic-bezier(0.4,0,0.2,1),
+              transform 0.28s cubic-bezier(0.4,0,0.2,1),
+              box-shadow 0.28s ease;
   overflow: hidden;
+  /* Ensure internal content cannot clip */
+  contain: layout;
 }
-.sidebar.collapsed { width: var(--sidebar-collapsed); }
+
+/* Collapsed: icon-only mode */
+.sidebar.collapsed {
+  width: var(--sidebar-collapsed);
+}
+
+/* ── Main content area ── */
 .main-content {
   flex: 1;
   margin-left: var(--sidebar-width);
   min-height: 100vh;
-  transition: margin-left 0.3s cubic-bezier(0.4,0,0.2,1);
+  transition: margin-left 0.28s cubic-bezier(0.4,0,0.2,1);
   min-width: 0;
+  /* Prevents content from bleeding under sidebar */
+  overflow-x: hidden;
 }
-.main-content.expanded { margin-left: var(--sidebar-collapsed); }
+.main-content.expanded {
+  margin-left: var(--sidebar-collapsed);
+}
+
+/* ── Topbar ── */
 .topbar {
   height: var(--topbar-height);
   background: var(--bg-surface);
@@ -481,31 +500,58 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
   gap: 12px;
 }
 @media (min-width: 768px) { .topbar { padding: 0 24px; } }
+
+/* ── Page content padding ── */
 .page-content { padding: 16px; }
-@media (min-width: 640px) { .page-content { padding: 20px; } }
+@media (min-width: 640px)  { .page-content { padding: 20px; } }
 @media (min-width: 1024px) { .page-content { padding: 24px; } }
 
-/* Sidebar hidden on mobile by default */
+/* ── Mobile: sidebar becomes slide-in drawer ── */
 @media (max-width: 767px) {
   .sidebar {
     transform: translateX(-100%);
     width: var(--sidebar-width) !important;
     z-index: 160;
+    box-shadow: none;
   }
   .sidebar.mobile-open {
     transform: translateX(0);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 0 40px rgba(0,0,0,0.25);
   }
   .main-content {
     margin-left: 0 !important;
   }
+  /* Backdrop overlay */
   .sidebar-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.45);
     z-index: 155;
-    backdrop-filter: blur(2px);
-    animation: fadeIn 0.2s ease;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    animation: fadeIn 0.2s ease forwards;
+  }
+}
+
+/* ── Tablet: collapsible but visible ── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .sidebar {
+    width: var(--sidebar-collapsed);
+  }
+  .sidebar .nav-label {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+  }
+  .main-content {
+    margin-left: var(--sidebar-collapsed);
+  }
+  /* Override collapsed state on tablet — already collapsed */
+  .sidebar.collapsed {
+    width: var(--sidebar-collapsed);
+  }
+  .main-content.expanded {
+    margin-left: var(--sidebar-collapsed);
   }
 }
 
@@ -514,24 +560,81 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 16px;
-  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  border-radius: 10px;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  /* Typography requirements */
+  font-size: 0.9375rem;       /* 15px */
   font-weight: 500;
-  transition: all 0.15s ease;
+  line-height: 1.5;
+  letter-spacing: 0;
+  /* No text wrapping — single line */
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+  /* Smooth transitions for hover/active */
+  transition: background 0.18s ease, color 0.18s ease, transform 0.12s ease;
+  cursor: pointer;
+  text-decoration: none;
+  width: 100%;
+  box-sizing: border-box;
+  /* Vertical alignment is guaranteed by align-items: center */
 }
-.nav-link:hover { background: var(--bg-elevated); color: var(--text-primary); }
+.nav-link:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  transform: translateX(2px);
+}
+.nav-link:active {
+  transform: translateX(0);
+}
 .nav-link.active {
   background: rgba(var(--accent-primary-rgb), 0.1);
   color: var(--accent-primary);
   font-weight: 600;
 }
-.nav-link .nav-icon { min-width: 20px; flex-shrink: 0; }
-.nav-label { opacity: 1; transition: opacity 0.2s ease; }
-.sidebar.collapsed .nav-label { opacity: 0; pointer-events: none; }
+.nav-link.active:hover {
+  background: rgba(var(--accent-primary-rgb), 0.15);
+  transform: none;
+}
+
+/* Icon cell — fixed width so text always starts at same X */
+.nav-link .nav-icon,
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* Label — takes remaining width, never wraps */
+.nav-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.22s ease, width 0.22s ease, max-width 0.22s ease;
+  /* Matches link font settings */
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+/* Hide label when sidebar is collapsed */
+.sidebar.collapsed .nav-label {
+  opacity: 0;
+  pointer-events: none;
+  max-width: 0;
+  overflow: hidden;
+}
 
 /* ─── TOAST ─── */
 .toast-container {
