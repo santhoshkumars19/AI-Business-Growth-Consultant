@@ -13,16 +13,15 @@ const features = [
 ];
 
 const navLinks = [
-  { href: '/about', label: 'About' },
+  { href: '/about',   label: 'About'   },
   { href: '/pricing', label: 'Pricing' },
-  { href: '/blog', label: 'Blog' },
+  { href: '/blog',    label: 'Blog'    },
   { href: '/contact', label: 'Contact' },
 ];
 
 export default function LandingPage() {
   const { theme, toggle } = useTheme();
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -30,38 +29,8 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
-    if (menuOpen) {
-      document.body.classList.add('body-lock');
-    } else {
-      document.body.classList.remove('body-lock');
-    }
-    return () => document.body.classList.remove('body-lock');
-  }, [menuOpen]);
-
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-base)', overflowX: 'hidden' }}>
-
-      {menuOpen && (
-        <>
-          <div className="mobile-menu-overlay" onClick={() => setMenuOpen(false)} />
-          <div className="mobile-menu-panel">
-            {/* Panel header */}
-            <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 7, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}>⚡</div>
-                <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.1rem' }}>GrowthIQ<span style={{ color: 'var(--accent-primary)' }}> AI</span></span>
-              </div>
-              <button onClick={() => setMenuOpen(false)} style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--bg-elevated)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕</button>
-            </div>
-            {/* Actions only — no nav links */}
-            <div style={{ padding: '24px 20px 32px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <Link href="/auth/login" onClick={() => setMenuOpen(false)} className="btn btn-ghost btn-lg btn-full">Sign In</Link>
-              <Link href="/auth/register" onClick={() => setMenuOpen(false)} className="btn btn-primary btn-lg btn-full">Get Started Free</Link>
-            </div>
-          </div>
-        </>
-      )}
 
       {/* ── NAVBAR ── */}
       <nav style={{
@@ -71,30 +40,33 @@ export default function LandingPage() {
         background: scrolled ? 'var(--bg-surface)' : 'transparent',
         borderBottom: scrolled ? '1px solid var(--border)' : 'none',
         backdropFilter: scrolled ? 'blur(16px)' : 'none',
-        transition: 'all 0.3s ease'
+        transition: 'all 0.3s ease',
+        gap: 8,
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        {/* Brand */}
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, textDecoration: 'none' }}>
           <div style={{ width: 30, height: 30, borderRadius: 7, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>⚡</div>
-          {/* Hide text on mobile to prevent overlap with action buttons */}
-          <span className="hide-mobile" style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>GrowthIQ<span style={{ color: 'var(--accent-primary)' }}> AI</span></span>
+          <span className="hide-mobile" style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
+            GrowthIQ<span style={{ color: 'var(--accent-primary)' }}> AI</span>
+          </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hide-mobile-flex" style={{ alignItems: 'center', gap: 6 }}>
+        {/* Desktop nav links */}
+        <div className="hide-mobile-flex" style={{ alignItems: 'center', gap: 4, flex: 1, justifyContent: 'center' }}>
           {navLinks.map(l => (
-            <Link key={l.href} href={l.href} style={{ padding: '6px 14px', borderRadius: 8, color: 'var(--text-secondary)', fontSize: '0.875rem', fontWeight: 500, transition: 'color 0.15s' }}>{l.label}</Link>
+            <Link key={l.href} href={l.href} style={{ padding: '6px 14px', borderRadius: 8, color: 'var(--text-secondary)', fontSize: '0.875rem', fontWeight: 500, transition: 'color 0.15s', whiteSpace: 'nowrap' }}>
+              {l.label}
+            </Link>
           ))}
         </div>
 
-        {/* Desktop Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button onClick={toggle} className="btn btn-ghost btn-sm" style={{ padding: '6px 10px', fontSize: '1rem' }}>{theme === 'dark' ? '☀️' : '🌙'}</button>
+        {/* Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <button onClick={toggle} className="btn btn-ghost btn-sm" style={{ padding: '6px 10px', fontSize: '1rem' }}>
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
           <Link href="/auth/login" className="btn btn-ghost btn-sm hide-mobile">Sign In</Link>
           <Link href="/auth/register" className="btn btn-primary btn-sm">Get Started</Link>
-          {/* Hamburger — mobile only */}
-          <button className={`hamburger hide-desktop ${menuOpen ? 'open' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
-            <span /><span /><span />
-          </button>
         </div>
       </nav>
 
@@ -141,6 +113,48 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* ── FOOTER ── visible on all screen sizes ── */}
+      <footer style={{
+        background: 'var(--bg-surface)',
+        borderTop: '1px solid var(--border)',
+        padding: '28px 16px',
+      }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, textAlign: 'center' }}>
+          {/* Brand */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 26, height: 26, borderRadius: 6, background: 'var(--gradient-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>⚡</div>
+            <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1rem' }}>
+              GrowthIQ<span style={{ color: 'var(--accent-primary)' }}> AI</span>
+            </span>
+          </div>
+
+          {/* Nav links — always visible including mobile */}
+          <nav style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 20px', justifyContent: 'center' }}>
+            {navLinks.map(l => (
+              <Link
+                key={l.href}
+                href={l.href}
+                style={{
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  color: 'var(--text-secondary)',
+                  transition: 'color 0.15s',
+                  textDecoration: 'none',
+                  padding: '4px 2px',
+                }}
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Copyright */}
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0 }}>
+            © 2026 GrowthIQ AI. All rights reserved.
+          </p>
+        </div>
+      </footer>
 
     </div>
   );
