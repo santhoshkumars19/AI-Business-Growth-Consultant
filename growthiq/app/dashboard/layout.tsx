@@ -392,23 +392,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </button>
 
               {showNotifMenu && (
-                <div style={{
-                  position: 'absolute',
-                  right: 0,
-                  top: 44,
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 16,
-                  boxShadow: 'var(--shadow-lg)',
-                  width: 320,
-                  maxHeight: 400,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  zIndex: 100,
-                  overflow: 'hidden',
-                  backdropFilter: 'blur(20px)',
-                  animation: 'fadeIn 0.2s ease',
-                }}>
+                <div
+                  className="notification-dropdown"
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 44,
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 16,
+                    boxShadow: 'var(--shadow-lg)',
+                    width: 320,
+                    maxHeight: 400,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    zIndex: 100,
+                    overflow: 'hidden',
+                    backdropFilter: 'blur(20px)',
+                    animation: 'fadeIn 0.2s ease',
+                  }}
+                >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
                     <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>Notifications</span>
                     <div style={{ display: 'flex', gap: 12 }}>
@@ -533,6 +536,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           border: 2px solid var(--bg-surface);
           padding: 0 4px;
           box-sizing: content-box;
+        }
+        @media (max-width: 767px) {
+          .notification-dropdown {
+            position: fixed !important;
+            left: 12px !important;
+            right: 12px !important;
+            width: auto !important;
+            top: 60px !important;
+            max-height: 400px !important;
+            z-index: 9999 !important;
+          }
         }
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(-4px); }
