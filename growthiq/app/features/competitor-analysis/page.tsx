@@ -118,14 +118,61 @@ function RadarSvg({ competitors }: { competitors: any[] }) {
 }
 
 export default function CompetitorPage() {
-  const { user } = useAuth();
+  const { user, fetchWithAuth } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
+  const [competitors, setCompetitors] = useState<any[]>([]);
+  const [opportunities, setOpportunities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
   const userIndustry = user?.businessData?.industry || 'Food & Beverage';
   const userBusinessName = user?.businessData?.business_name || 'Your Business';
-  
-  const competitors = getCompetitorsForIndustry(userIndustry, userBusinessName);
-  const opportunities = getOpportunitiesForIndustry(userIndustry);
+
+  useEffect(() => {
+    const loadCompetitors = async () => {
+      try {
+        const data = await fetchWithAuth('/features/competitor');
+        const ci = data.competitor_insights;
+        if (ci && ci.competitors && ci.competitors.length > 0) {
+          const userRev = user?.businessData?.monthly_revenue || 250000;
+          const userCust = user?.businessData?.monthly_customers || 150;
+          const updated = ci.competitors.map((c: any) => {
+            if (c.isUser || c.short === 'You') {
+              return {
+                ...c,
+                name: userBusinessName,
+                revenue: `₹${(userRev / 100000).toFixed(1)}L`,
+                customers: userCust
+              };
+            }
+            return c;
+          });
+          setCompetitors(updated);
+          setOpportunities(ci.opportunities || []);
+        } else {
+          setCompetitors(getCompetitorsForIndustry(userIndustry, userBusinessName));
+          setOpportunities(getOpportunitiesForIndustry(userIndustry));
+        }
+      } catch (e) {
+        console.error('Failed to load competitor insights:', e);
+        setCompetitors(getCompetitorsForIndustry(userIndustry, userBusinessName));
+        setOpportunities(getOpportunitiesForIndustry(userIndustry));
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (user) {
+      loadCompetitors();
+    }
+  }, [user, userIndustry, userBusinessName]);
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <div className="spinner" style={{ width: 40, height: 40, borderWidth: 3 }} />
+        <p style={{ color: 'var(--text-secondary)' }}>Loading Competitor Analysis...</p>
+      </div>
+    );
+  }
 
   return (
     <div>

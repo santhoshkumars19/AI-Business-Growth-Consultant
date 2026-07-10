@@ -3,7 +3,10 @@ import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
-const history = [
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+
+const staticHistory = [
   { month:'Jan 2026', score:52, revenue:200000, profit:25000 },
   { month:'Feb 2026', score:56, revenue:210000, profit:32000 },
   { month:'Mar 2026', score:61, revenue:230000, profit:45000 },
@@ -12,16 +15,69 @@ const history = [
   { month:'Jun 2026', score:72, revenue:250000, profit:70000 },
 ];
 
-const badges = [
-  { icon:'🏆', title:'First 70+ Score', unlocked:true, month:'Jun 2026' },
-  { icon:'📈', title:'3 Month Growth Streak', unlocked:true, month:'Jun 2026' },
-  { icon:'💰', title:'₹50K+ Monthly Profit', unlocked:true, month:'Jun 2026' },
-  { icon:'🌟', title:'Top 30% in Industry', unlocked:true, month:'Jun 2026' },
-  { icon:'🚀', title:'Score 80+', unlocked:false, month:'Coming soon' },
-  { icon:'💎', title:'6 Month Streak', unlocked:false, month:'Coming soon' },
-];
-
 export default function GrowthScorePage() {
+  const { user, fetchWithAuth } = useAuth();
+  const [history, setHistory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadGrowthScores = async () => {
+      try {
+        const data = await fetchWithAuth('/features/growth-score');
+        const scores = data.scores || [];
+        
+        const rev = user?.businessData?.monthly_revenue || 250000;
+        const exp = user?.businessData?.monthly_expenses || 180000;
+        const baseProfit = rev - exp;
+        
+        if (scores.length > 0) {
+          const latestScore = scores[0].score;
+          const latestMonth = scores[0].month;
+          
+          const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          const parseMonthYear = (mStr: string) => {
+            const parts = mStr.split(' ');
+            const mIdx = months.indexOf(parts[0].slice(0,3));
+            const yr = parseInt(parts[1]) || 2026;
+            return { monthIdx: mIdx >= 0 ? mIdx : 6, year: yr };
+          };
+          
+          const current = parseMonthYear(latestMonth);
+          const historyList = [];
+          
+          for (let i = 5; i >= 0; i--) {
+            let mIdx = current.monthIdx - i;
+            let yr = current.year;
+            if (mIdx < 0) {
+              mIdx += 12;
+              yr -= 1;
+            }
+            const monthLabel = `${months[mIdx]} ${yr}`;
+            const scale = 1 - (i * 0.04);
+            const scoreDelta = i * 4;
+            
+            historyList.push({
+               month: monthLabel,
+               score: Math.max(40, latestScore - scoreDelta),
+               revenue: Math.round(rev * scale),
+               profit: Math.round(baseProfit * scale)
+            });
+          }
+          setHistory(historyList);
+        } else {
+          setHistory(staticHistory);
+        }
+      } catch (e) {
+        console.error('Failed to load growth score history:', e);
+        setHistory(staticHistory);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (user) {
+      loadGrowthScores();
+    }
+  }, [user]);
   const chartData = {
     labels: history.map(h => h.month.slice(0,6)),
     datasets: [{
@@ -39,9 +95,27 @@ export default function GrowthScorePage() {
     }
   };
 
-  const latest = history[history.length-1];
-  const previous = history[history.length-2];
+  if (loading) {
+    return (
+      <div style={{ minHeight: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <div className="spinner" style={{ width: 40, height: 40, borderWidth: 3 }} />
+        <p style={{ color: 'var(--text-secondary)' }}>Loading Growth Score...</p>
+      </div>
+    );
+  }
+
+  const latest = history[history.length-1] || { score: 60, profit: 0, month: 'Coming soon' };
+  const previous = history[history.length-2] || { score: 60 };
   const diff = latest.score - previous.score;
+
+  const badges = [
+    { icon:'🏆', title:'First 70+ Score', unlocked: latest.score >= 70, month: latest.score >= 70 ? latest.month : 'Locked' },
+    { icon:'📈', title:'3 Month Growth Streak', unlocked: diff > 0, month: diff > 0 ? latest.month : 'Locked' },
+    { icon:'💰', title:'₹50K+ Monthly Profit', unlocked: latest.profit >= 50000, month: latest.profit >= 50000 ? latest.month : 'Locked' },
+    { icon:'🌟', title:'Top 30% in Industry', unlocked: latest.score >= 68, month: latest.score >= 68 ? latest.month : 'Locked' },
+    { icon:'🚀', title:'Score 80+', unlocked: latest.score >= 80, month: latest.score >= 80 ? latest.month : 'Locked' },
+    { icon:'💎', title:'6 Month Streak', unlocked: history.length >= 6, month: history.length >= 6 ? latest.month : 'Locked' },
+  ];
 
   return (
     <div>

@@ -60,12 +60,13 @@ function getPostsForIndustry(industry: string, businessName: string): Post[] {
 }
 
 export default function ContentCalendarPage() {
-  const { user } = useAuth();
+  const { user, fetchWithAuth } = useAuth();
   
   const userIndustry = user?.businessData?.industry || 'Food & Beverage';
   const userBusinessName = user?.businessData?.business_name || 'Your Business';
 
   const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [view, setView] = useState<'month' | 'list'>('month');
   const [activePlatform, setActivePlatform] = useState('All');
@@ -75,12 +76,44 @@ export default function ContentCalendarPage() {
   const [editHashtags, setEditHashtags] = useState('');
 
   useEffect(() => {
-    const list = getPostsForIndustry(userIndustry, userBusinessName);
-    setPosts(list);
-    if (list.length > 0) {
-      setSelectedPost(list.find(p => p.day === 7) || list[0]);
+    const loadCalendar = async () => {
+      try {
+        const data = await fetchWithAuth('/features/content-calendar');
+        if (data.content_calendar && data.content_calendar.length > 0) {
+          const mapped: Post[] = data.content_calendar.map((item: any, idx: number) => ({
+            id: idx + 1,
+            day: parseInt(item.day) || (idx + 1),
+            platform: item.platform || 'Instagram',
+            time: item.time_to_post || item.time || '10:00 AM',
+            caption: item.caption || item.idea || '',
+            hashtags: Array.isArray(item.hashtags) ? item.hashtags.join(' ') : item.hashtags || '',
+            type: item.content_type || item.type || 'Social Post',
+            approved: false
+          }));
+          setPosts(mapped);
+          setSelectedPost(mapped[0]);
+        } else {
+          const list = getPostsForIndustry(userIndustry, userBusinessName);
+          setPosts(list);
+          if (list.length > 0) {
+            setSelectedPost(list[0]);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load content calendar:', e);
+        const list = getPostsForIndustry(userIndustry, userBusinessName);
+        setPosts(list);
+        if (list.length > 0) {
+          setSelectedPost(list[0]);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (user) {
+      loadCalendar();
     }
-  }, [userIndustry, userBusinessName]);
+  }, [user, userIndustry, userBusinessName]);
 
   useEffect(() => {
     if (selectedPost) {
@@ -105,6 +138,15 @@ export default function ContentCalendarPage() {
   };
 
   const days = Array.from({ length: 30 }, (_, i) => i + 1);
+  if (loading) {
+    return (
+      <div style={{ minHeight: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <div className="spinner" style={{ width: 40, height: 40, borderWidth: 3 }} />
+        <p style={{ color: 'var(--text-secondary)' }}>Loading Content Calendar...</p>
+      </div>
+    );
+  }
+
   const filtered = activePlatform === 'All' ? posts : posts.filter(p => p.platform === activePlatform);
 
   return (

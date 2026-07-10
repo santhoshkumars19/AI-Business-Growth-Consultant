@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^8.0.0",
+    "@next/swc-win32-x64-msvc": "^16.2.10",
     "autoprefixer": "^10.5.2",
     "chart.js": "^4.5.1",
     "html2canvas": "^1.4.1",

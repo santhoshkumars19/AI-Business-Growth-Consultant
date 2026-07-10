@@ -1,28 +1,64 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 type ActivityType = 'social' | 'ad' | 'email' | 'promo';
 
 const COLOR_MAP: Record<ActivityType, string> = { social:'#6366F1', ad:'#8B5CF6', email:'#10B981', promo:'#F59E0B' };
 const LABEL_MAP: Record<ActivityType, string> = { social:'Social Post', ad:'Paid Ad', email:'Email Campaign', promo:'Promotion' };
 
-const PLAN: Record<number, { type: ActivityType; title: string; platform: string; budget: string; reach: string; caption: string }[]> = {
-  1:[{type:'social',title:'Welcome July! Summer special post',platform:'Instagram',budget:'Organic',reach:'800–1,200',caption:'☀️ Beat the heat with our special July menu! Fresh ingredients, cool prices. Come visit us today. #MumbaiFoodie #SummerSpecial'}],
-  3:[{type:'ad',title:'Boosted testimonial ad',platform:'Instagram',budget:'₹600',reach:'3,500–5,000',caption:'See why 165+ customers call Bloom Bakery their favourite! 🧁 Tap to discover our story.'}],
-  5:[{type:'email',title:'Newsletter: July offers',platform:'Email',budget:'Free',reach:'All subscribers',caption:'Subject: 🌟 July is here and so are our best deals! Hi {name}, check out what\'s new this month...'}],
-  7:[{type:'social',title:'Behind the scenes reel',platform:'Instagram',budget:'Organic',reach:'1,200–2,400',caption:'From oven to your plate in 3 hours! 🔥 Watch how we make our signature croissants. #BakeryLife #FoodReel'}],
-  10:[{type:'promo',title:'Mid-month discount push',platform:'WhatsApp + Instagram',budget:'₹800',reach:'5,000–7,000',caption:'🎁 Exclusive offer for our loyal customers: 20% off on orders above ₹500 this weekend only!'}],
-  14:[{type:'ad',title:'Retargeting campaign',platform:'Meta Ads',budget:'₹1,200',reach:'10,000–15,000',caption:'Still thinking about it? 😊 Come try Bloom Bakery — your first croissant is on us with code FIRST.'}],
-  18:[{type:'social',title:'Customer spotlight post',platform:'Instagram',budget:'Organic',reach:'600–1,000',caption:'Meet Meera — one of our 165 amazing regulars! ❤️ Thank you for your loyalty. Tag a friend who needs to try Bloom!'}],
-  21:[{type:'email',title:'Referral program launch',platform:'Email + WhatsApp',budget:'Free',reach:'All contacts',caption:'🎉 Big news! Refer a friend and both of you get ₹200 off your next order. Share your unique code: BLOOM-{code}'}],
-  25:[{type:'ad',title:'Weekend special ads',platform:'Instagram Stories',budget:'₹500',reach:'2,500–4,000',caption:'This weekend at Bloom Bakery 🥐: Free coffee with any order above ₹300! Saturday + Sunday only.'}],
-  28:[{type:'promo',title:'Month-end summary + teaser',platform:'Instagram + Facebook',budget:'₹400',reach:'2,000–3,500',caption:'What a month! 🙏 Thank you Mumbai for the love. Something exciting is coming in August... stay tuned! 👀'}],
-};
-
 export default function MarketingPlanPage() {
+  const { fetchWithAuth, user } = useAuth();
+  const [plan, setPlan] = useState<Record<number, { type: ActivityType; title: string; platform: string; budget: string; reach: string; caption: string }[]>>({});
+  const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [view, setView] = useState<'month'|'week'>('month');
   const [activeWeek, setActiveWeek] = useState(0);
+
+  useEffect(() => {
+    const loadPlan = async () => {
+      try {
+        const data = await fetchWithAuth('/features/marketing-plan');
+        if (data.marketing_plan && data.marketing_plan.length > 0) {
+          const mapped: Record<number, any[]> = {};
+          data.marketing_plan.forEach((item: any) => {
+            const day = parseInt(item.day) || 1;
+            if (!mapped[day]) mapped[day] = [];
+            
+            let actType: ActivityType = 'social';
+            const platLower = (item.platform || '').toLowerCase();
+            const titleLower = (item.title || '').toLowerCase();
+            const descLower = (item.description || '').toLowerCase();
+            
+            if (platLower.includes('email')) {
+              actType = 'email';
+            } else if (platLower.includes('ad') || titleLower.includes('ad') || descLower.includes('ad')) {
+              actType = 'ad';
+            } else if (titleLower.includes('offer') || descLower.includes('offer') || titleLower.includes('discount') || descLower.includes('discount') || titleLower.includes('promo')) {
+              actType = 'promo';
+            }
+
+            mapped[day].push({
+              type: actType,
+              title: item.title || 'Marketing Activity',
+              platform: item.platform || 'Social Media',
+              budget: item.budget || 'Organic',
+              reach: item.estimated_reach || item.reach || '500-1,000',
+              caption: item.description || item.caption || ''
+            });
+          });
+          setPlan(mapped);
+        }
+      } catch (e) {
+        console.error('Failed to load marketing plan:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (user) {
+      loadPlan();
+    }
+  }, [user]);
 
   const days = Array.from({length:30},(_,i)=>i+1);
   const weekDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
@@ -45,9 +81,18 @@ export default function MarketingPlanPage() {
 
   const handlePrevWeek = () => setActiveWeek(w => Math.max(0, w - 1));
   const handleNextWeek = () => setActiveWeek(w => Math.min(4, w + 1));
-  const budgetTotal = Object.values(PLAN).flat().reduce((a,p)=>a+(p.budget.startsWith('₹')?parseInt(p.budget.slice(1).replace(',','')):0),0);
-  const activityCount = Object.values(PLAN).flat().length;
-  const selectedActivities = selectedDay ? (PLAN[selectedDay] || []) : [];
+  if (loading) {
+    return (
+      <div style={{ minHeight: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <div className="spinner" style={{ width: 40, height: 40, borderWidth: 3 }} />
+        <p style={{ color: 'var(--text-secondary)' }}>Loading Marketing Plan...</p>
+      </div>
+    );
+  }
+
+  const budgetTotal = Object.values(plan).flat().reduce((a,p)=>a+(p.budget.startsWith('₹')?parseInt(p.budget.slice(1).replace(',','')):0),0);
+  const activityCount = Object.values(plan).flat().length;
+  const selectedActivities = selectedDay ? (plan[selectedDay] || []) : [];
 
   return (
     <div>
@@ -98,7 +143,7 @@ export default function MarketingPlanPage() {
             <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:4 }}>
               {[...Array(2)].map((_,i)=><div key={`e${i}`} />)}
               {days.map(d=>{
-                const acts = PLAN[d] || [];
+                const acts = plan[d] || [];
                 const isSelected = selectedDay===d;
                 return (
                   <div key={d} onClick={()=>{setSelectedDay(d===selectedDay?null:d); setActiveWeek(Math.floor((d + 1) / 7));}} className="calendar-day" style={{ borderColor: isSelected ? 'var(--accent-primary)' : acts.length ? 'rgba(var(--accent-primary-rgb),0.3)' : 'var(--border)', background: isSelected ? 'rgba(var(--accent-primary-rgb),0.1)' : 'var(--bg-surface)' }}>
@@ -134,7 +179,7 @@ export default function MarketingPlanPage() {
                     return <div key={`e${cellIndex}`} />;
                   }
                   
-                  const acts = PLAN[d] || [];
+                  const acts = plan[d] || [];
                   const isSelected = selectedDay===d;
                   return (
                     <div key={d} onClick={()=>setSelectedDay(d===selectedDay?null:d)} className="calendar-day" style={{ borderColor: isSelected ? 'var(--accent-primary)' : acts.length ? 'rgba(var(--accent-primary-rgb),0.3)' : 'var(--border)', background: isSelected ? 'rgba(var(--accent-primary-rgb),0.1)' : 'var(--bg-surface)' }}>
