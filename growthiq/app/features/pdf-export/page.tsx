@@ -76,7 +76,7 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
       {/* ── Cover Page ─────────────────────────────── */}
       <div style={{ minHeight:1123, background:'#FFFFFF', display:'flex', flexDirection:'column', padding:'60px 56px', boxSizing:'border-box', position:'relative', overflow:'hidden', borderBottom:'1px solid #E2E8F0' }}>
 
-        <div style={{ marginBottom:'auto' }}>
+        <div style={{ marginBottom: 40 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:60 }}>
             <div style={{ width:36, height:36, borderRadius:9, background:'rgba(99,102,241,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:'#6366F1', fontWeight:'bold' }}>■</div>
             <span style={{ color:'#6366F1', fontWeight:800, fontSize:16, letterSpacing:'0.02em' }}>GrowthIQ AI</span>
@@ -92,9 +92,9 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
         </div>
 
         {/* Health Score on cover */}
-        <div style={{ display:'flex', alignItems:'center', gap:32, background:'#F8FAFC', borderRadius:16, padding:'24px 32px', border:'1px solid #E2E8F0' }}>
-          <div style={{ textAlign:'center' }}>
-            <div style={{ fontFamily:'monospace', fontSize:52, fontWeight:800, color:sc, lineHeight:1 }}>{analysis.health_score}</div>
+        <div style={{ display:'flex', alignItems:'center', gap:32, background:'#F8FAFC', borderRadius:16, padding:'24px 32px', border:'1px solid #E2E8F0', marginBottom: 20 }}>
+          <div style={{ textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minWidth:90 }}>
+            <div style={{ fontSize:44, fontWeight:800, color:sc, lineHeight:1.1 }}>{analysis.health_score}</div>
             <div style={{ fontSize:11, color:'#64748B', marginTop:4 }}>Health Score / 100</div>
           </div>
           <div style={{ width:1, height:70, background:'#E2E8F0' }} />
@@ -113,7 +113,7 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
           </div>
         </div>
 
-        <div style={{ marginTop:40, fontSize:10, color:'#94A3B8', textAlign:'center' }}>
+        <div style={{ marginTop:'auto', fontSize:10, color:'#94A3B8', textAlign:'center' }}>
           Confidential · Powered by Gemini AI · GrowthIQ AI Platform · {new Date().getFullYear()}
         </div>
       </div>
@@ -127,9 +127,9 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
 
         {sectionTitle('Business Health Score', 'Performance across 4 key business dimensions')}
         <div style={{ display:'flex', alignItems:'center', gap:40, marginBottom:32, background:'#F8FAFC', borderRadius:14, padding:'24px 28px', border:'1px solid #E2E8F0' }}>
-          <div style={{ textAlign:'center', flexShrink:0 }}>
-            <div style={{ fontFamily:'monospace', fontSize:56, fontWeight:800, color:sc, lineHeight:1 }}>{analysis.health_score}</div>
-            <div style={{ fontSize:10, color:'#9CA3AF', marginTop:4 }}>OUT OF 100</div>
+          <div style={{ textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', flexShrink:0, minWidth:100 }}>
+            <div style={{ fontSize:48, fontWeight:800, color:sc, lineHeight:1.1 }}>{analysis.health_score}</div>
+            <div style={{ fontSize:9, color:'#9CA3AF', marginTop:4, letterSpacing:'0.05em' }}>OUT OF 100</div>
             <div style={{ marginTop:8, padding:'4px 12px', background:`${sc}20`, color:sc, borderRadius:99, fontSize:10, fontWeight:700 }}>
               {analysis.health_score >= 70 ? 'STRONG' : analysis.health_score >= 40 ? 'MODERATE' : 'CRITICAL'}
             </div>
