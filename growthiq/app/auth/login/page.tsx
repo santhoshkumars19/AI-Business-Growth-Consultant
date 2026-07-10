@@ -75,7 +75,7 @@ export default function LoginPage() {
             <div className="input-group">
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <label className="input-label">Password</label>
-                <a href="#" className="link" style={{ fontSize: '0.8rem' }}>Forgot password?</a>
+                <Link href="/auth/forgot-password" className="link" style={{ fontSize: '0.8rem' }}>Forgot password?</Link>
               </div>
               <input className="input" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required autoComplete="current-password" />
             </div>

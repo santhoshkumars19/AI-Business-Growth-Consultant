@@ -90,3 +90,22 @@ class FeedbackOut(FeedbackIn):
     user_id: str
     status: str
     created_at: Optional[datetime] = None
+
+
+# ── Password Reset Schemas ────────────────────────────────────────────────────
+
+class ForgotPasswordIn(BaseModel):
+    email: EmailStr
+
+
+class ForgotPasswordOut(BaseModel):
+    message: str
+
+
+class ResetPasswordIn(BaseModel):
+    token: str
+    new_password: str
+
+
+class ResetPasswordOut(BaseModel):
+    message: str

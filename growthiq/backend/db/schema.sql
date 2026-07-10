@@ -89,12 +89,23 @@ CREATE TABLE IF NOT EXISTS feedback (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ── PASSWORD RESETS ──────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS password_resets (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    token TEXT UNIQUE NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ── INDEXES ──────────────────────────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_business_user ON business_data(user_id);
 CREATE INDEX IF NOT EXISTS idx_analyses_user ON analyses(user_id);
 CREATE INDEX IF NOT EXISTS idx_payments_user ON payments(user_id);
 CREATE INDEX IF NOT EXISTS idx_feedback_status ON feedback(status);
 CREATE INDEX IF NOT EXISTS idx_growth_scores_user ON growth_scores(user_id);
+CREATE INDEX IF NOT EXISTS idx_password_resets_token ON password_resets(token);
 
 -- ── ROW LEVEL SECURITY (Disabled by default as backend API manages security) ──
 ALTER TABLE users DISABLE ROW LEVEL SECURITY;
@@ -103,3 +114,4 @@ ALTER TABLE analyses DISABLE ROW LEVEL SECURITY;
 ALTER TABLE payments DISABLE ROW LEVEL SECURITY;
 ALTER TABLE feedback DISABLE ROW LEVEL SECURITY;
 ALTER TABLE growth_scores DISABLE ROW LEVEL SECURITY;
+ALTER TABLE password_resets DISABLE ROW LEVEL SECURITY;
