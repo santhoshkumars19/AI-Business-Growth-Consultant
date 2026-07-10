@@ -149,16 +149,6 @@ export default function MarketingPlanPage() {
         </div>
       </div>
 
-      {/* AI Marketing Suggestion */}
-      <div className="card p-5" style={{ background:'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(16,185,129,0.06))', border:'1px solid rgba(99,102,241,0.2)', marginBottom:20 }}>
-        <h3 style={{ fontWeight:700, fontSize:'0.9rem', display:'flex', alignItems:'center', gap:8, color:'var(--accent-primary)', marginBottom:8 }}>
-          <span>✨</span> AI Strategic Suggestion
-        </h3>
-        <p style={{ fontSize:'0.82rem', color:'var(--text-secondary)', lineHeight:1.6, margin:0 }}>
-          For <strong>{userBusinessName}</strong> operating in the <strong>{userIndustry.toLowerCase()}</strong> sector inside <strong>{user?.businessData?.city || 'Tamil Nadu'}</strong>, we recommend running exactly <strong>3 activities per week</strong>. Keep content focused on local Instagram stories in Week 2, followed by a WhatsApp referral incentive loop during Week 3 to capture returning clients.
-        </p>
-      </div>
-
       {/* Summary Bar */}
       <div className="grid-4" style={{ marginBottom:20, gap:12 }}>
         {[['📅','Activities',''+activityCount,'planned'],['💰','Budget','₹'+budgetTotal.toLocaleString('en-IN'),'estimated'],['📣','Est. Reach','45K–72K','impressions'],['🎯','Channels','4','platforms']].map(([icon,label,val,sub])=>(

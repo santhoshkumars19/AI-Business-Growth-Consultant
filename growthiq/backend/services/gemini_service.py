@@ -34,68 +34,32 @@ def get_fallback_marketing_plan(metrics: dict) -> list:
     industry = metrics.get("industry", "Business")
     city = metrics.get("city", "Chennai")
     
-    # 10 rich marketing action entries spread across 30 days
+    # 21 rich marketing action entries spread across 30 days
     actions = [
-      {
-        "week": 1, "day": 1,
-        "title": f"Launch localized campaign for {name}",
-        "description": f"Publish a high-resolution introductory post on Instagram and Facebook introducing {name} and our {industry} services in {city}.",
-        "platform": "Instagram", "time_required": "30 mins", "estimated_reach": "300-500 people"
-      },
-      {
-        "week": 1, "day": 3,
-        "title": "Optimize Google My Business Profile",
-        "description": f"Claim your profile and add local keywords '{industry} in {city}' to your business name and services description.",
-        "platform": "Google", "time_required": "45 mins", "estimated_reach": "400-700 search views"
-      },
-      {
-        "week": 1, "day": 5,
-        "title": "Introduce Customer Referral Incentive",
-        "description": "Create a simple referral graphic for WhatsApp: offer existing customers a 10% discount for every new client they introduce.",
-        "platform": "WhatsApp", "time_required": "20 mins", "estimated_reach": "All current contacts"
-      },
-      {
-        "week": 2, "day": 8,
-        "title": "Behind-the-scenes video/reel",
-        "description": f"Create a short 15-second reel showing how your {industry} team prepares daily products or services with emphasis on quality.",
-        "platform": "Instagram", "time_required": "40 mins", "estimated_reach": "600-1,200 views"
-      },
-      {
-        "week": 2, "day": 12,
-        "title": "Collaborate with complementary local business",
-        "description": f"Partner with another local store in {city} to display each other's business cards and offer mutual referral discounts.",
-        "platform": "Offline", "time_required": "2 hours", "estimated_reach": "150-300 offline visitors"
-      },
-      {
-        "week": 3, "day": 15,
-        "title": "Mid-month promotion push",
-        "description": "Send a broadcasting message on WhatsApp offering a weekend-only 15% discount for bookings/orders above ₹499.",
-        "platform": "WhatsApp", "time_required": "15 mins", "estimated_reach": "Direct client reach"
-      },
-      {
-        "week": 3, "day": 19,
-        "title": "Share educational value post",
-        "description": f"Share a graphic highlighting 3 common mistakes clients make when buying {industry} products, and how {name} helps avoid them.",
-        "platform": "Instagram", "time_required": "30 mins", "estimated_reach": "400-800 views"
-      },
-      {
-        "week": 4, "day": 22,
-        "title": "Run a local micro-targeted ad campaign",
-        "description": f"Launch a basic Meta ad targeting a 3km radius around {city} focused on your primary {industry} service offering.",
-        "platform": "Instagram", "time_required": "60 mins", "estimated_reach": "3,000-5,000 local views"
-      },
-      {
-        "week": 4, "day": 25,
-        "title": "Host a review extraction drive",
-        "description": "Send a thank-you WhatsApp message to your top 15 regular customers, containing a direct link to leave a Google Review.",
-        "platform": "Google", "time_required": "25 mins", "estimated_reach": "15 high-intent review submissions"
-      },
-      {
-        "week": 4, "day": 28,
-        "title": "Month-end thank you + teaser post",
-        "description": f"Post a collage of this month's top client moments at {name}, with a teaser for next month's incoming updates.",
-        "platform": "Facebook", "time_required": "20 mins", "estimated_reach": "500-900 views"
-      }
+      { "week": 1, "day": 1, "title": f"Launch localized campaign for {name}", "description": f"Publish a high-resolution introductory post on Instagram and Facebook introducing {name} and our {industry} services in {city}.", "platform": "Instagram", "time_required": "30 mins", "estimated_reach": "300-500 people" },
+      { "week": 1, "day": 2, "title": "Optimize Google My Business Profile", "description": f"Claim your profile and add local keywords '{industry} in {city}' to your business name and services description.", "platform": "Google", "time_required": "45 mins", "estimated_reach": "400-700 search views" },
+      { "week": 1, "day": 3, "title": "Introduce Customer Referral Incentive", "description": "Create a simple referral graphic for WhatsApp: offer existing customers a 10% discount for every new client they introduce.", "platform": "WhatsApp", "time_required": "20 mins", "estimated_reach": "All current contacts" },
+      { "week": 1, "day": 5, "title": "Local Facebook Group Outreach", "description": f"Introduce your {industry} offerings in local {city} community groups with a special introductory discount code.", "platform": "Facebook", "time_required": "30 mins", "estimated_reach": "150-250 local prospects" },
+      { "week": 1, "day": 6, "title": "Google Listing FAQ setup", "description": "Add 3 frequently asked questions regarding your pricing, availability, and address to your GMB profile.", "platform": "Google", "time_required": "15 mins", "estimated_reach": "100-200 viewers" },
+      
+      { "week": 2, "day": 8, "title": "Behind-the-scenes video/reel", "description": f"Create a short 15-second reel showing how your {industry} team prepares daily products or services with emphasis on quality.", "platform": "Instagram", "time_required": "40 mins", "estimated_reach": "600-1,200 views" },
+      { "week": 2, "day": 9, "title": "WhatsApp Status Marketing", "description": "Post a customer testimonial snippet on your WhatsApp Status and business catalog.", "platform": "WhatsApp", "time_required": "10 mins", "estimated_reach": "All regular customers" },
+      { "week": 2, "day": 10, "title": "Local Flyer Distribution", "description": f"Print and distribute 100 simple flyers to nearby shops and residential blocks in {city}.", "platform": "Offline", "time_required": "90 mins", "estimated_reach": "100 local families" },
+      { "week": 2, "day": 12, "title": "Collaborate with complementary local business", "description": f"Partner with another local store in {city} to display each other's business cards and offer mutual referral discounts.", "platform": "Offline", "time_required": "2 hours", "estimated_reach": "150-300 offline visitors" },
+      { "week": 2, "day": 13, "title": "Interactive Story Q&A", "description": "Host an Instagram Q&A story sticker asking customers about their biggest challenges with products.", "platform": "Instagram", "time_required": "15 mins", "estimated_reach": "200-400 views" },
+      
+      { "week": 3, "day": 15, "title": "Mid-month promotion push", "description": "Send a broadcasting message on WhatsApp offering a weekend-only 15% discount for bookings/orders above ₹499.", "platform": "WhatsApp", "time_required": "15 mins", "estimated_reach": "Direct client reach" },
+      { "week": 3, "day": 16, "title": "Post Educational Reels", "description": f"Share a tip reel addressing standard mistakes in {industry} choice and how {name} resolves them.", "platform": "Instagram", "time_required": "30 mins", "estimated_reach": "500-1,000 views" },
+      { "week": 3, "day": 17, "title": "Direct Review Incentive Drive", "description": "Give a physical coupon of 5% off next order to customers who submit a live review on Google.", "platform": "Google", "time_required": "20 mins", "estimated_reach": "Direct walk-in clients" },
+      { "week": 3, "day": 19, "title": "Local Newspaper Classifieds", "description": f"Place a small ad in local {city} newspapers listing key contact numbers.", "platform": "Offline", "time_required": "30 mins", "estimated_reach": "1,000-2,000 readers" },
+      { "week": 3, "day": 20, "title": "Infographic Platform Post", "description": "Publish a simple list infographic explaining how to choose the right materials/services.", "platform": "Facebook", "time_required": "20 mins", "estimated_reach": "300-600 views" },
+      
+      { "week": 4, "day": 22, "title": "Run a local micro-targeted ad campaign", "description": f"Launch a basic Meta ad targeting a 3km radius around {city} focused on your primary {industry} service offering.", "platform": "Instagram", "time_required": "60 mins", "estimated_reach": "3,000-5,000 local views" },
+      { "week": 4, "day": 23, "title": "WhatsApp Product Catalog Update", "description": f"Add high-quality product images, brief descriptions, and clear pricing structure to your WhatsApp Catalog.", "platform": "WhatsApp", "time_required": "30 mins", "estimated_reach": "All direct link visitors" },
+      { "week": 4, "day": 24, "title": "Review Extraction Campaign", "description": "Send a thank-you WhatsApp message to your top 15 regular customers, containing a direct link to leave a Google Review.", "platform": "Google", "time_required": "25 mins", "estimated_reach": "15 high-intent reviews" },
+      { "week": 4, "day": 26, "title": "Banner / Flex Board Placement", "description": f"Place a highly visible banner outside your storefront in {city} highlighting discount offers.", "platform": "Offline", "time_required": "60 mins", "estimated_reach": "Daily pedestrian flow" },
+      { "week": 4, "day": 28, "title": "Month-end thank you + teaser post", "description": f"Post a collage of this month's top client moments at {name}, with a teaser for next month's incoming updates.", "platform": "Facebook", "time_required": "20 mins", "estimated_reach": "500-900 views" },
+      { "week": 5, "day": 30, "title": "Analytics Review & Plan Next Month", "description": "Track how many Google Views, Instagram engagements, and WhatsApp inquiries you received this month.", "platform": "Google", "time_required": "45 mins", "estimated_reach": "Internal tracking dashboard" }
     ]
     return actions
 
@@ -464,7 +428,7 @@ Provide 6-8 specific, actionable recommendations tailored to the Indian market. 
 
 
 def generate_marketing_plan(metrics: dict) -> list:
-    """Generate a 30-day marketing plan with exactly 3 plans a week."""
+    """Generate a comprehensive 30-day marketing plan covering all days of the month."""
     try:
         prompt = f"""
 Create a 30-day marketing plan for a {metrics.get('industry')} business in {metrics.get('city')}, Tamil Nadu.
@@ -486,7 +450,7 @@ Return ONLY valid JSON array:
   }}
 ]
 ```
-Generate exactly 3 activities (plans) for each week, spread across different days (e.g. Week 1: Days 1, 3, 5; Week 2: Days 8, 10, 12; Week 3: Days 15, 17, 19; Week 4: Days 22, 24, 26). Total should be exactly 12 items.
+Generate 20-30 day entries covering Instagram, WhatsApp, Google My Business, and offline marketing. Ensure the plan has rich daily coverage spanning the entire 30 days of the month.
 """
         response = _get_model().generate_content(prompt)
         result = _parse_json(response.text)
