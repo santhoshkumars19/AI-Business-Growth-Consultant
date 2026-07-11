@@ -185,20 +185,47 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
         </div>
 
         {/* SWOT Analysis */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:16, marginBottom:40 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:14, marginBottom:24 }}>
           {swotBox('💪 Strengths',    analysis.swot?.strengths || [],    '#F0FDF4','#86EFAC','#16A34A')}
           {swotBox('⚠️ Weaknesses',  analysis.swot?.weaknesses || [],   '#FFF1F2','#FCA5A5','#DC2626')}
           {swotBox('🚀 Opportunities',analysis.swot?.opportunities || [],'#EFF6FF','#93C5FD','#2563EB')}
           {swotBox('🛡️ Threats',      analysis.swot?.threats || [],      '#FFFBEB','#FCD34D','#D97706')}
         </div>
 
+        {/* Competitor Analysis */}
+        {analysis.competitor_insights && (
+          <div style={{ marginBottom:24 }}>
+            <h3 style={{ fontFamily:'Georgia, serif', fontSize:15, fontWeight:700, color:'#1E293B', marginBottom:8 }}>
+              Competitor Analysis
+            </h3>
+            <div style={{ background:'#F8FAFC', borderRadius:12, padding:'12px 16px', border:'1px solid #E2E8F0' }}>
+              <div style={{ fontWeight:700, fontSize:11, color:'#64748B', textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:4 }}>Market Position</div>
+              <p style={{ fontSize:11, color:'#374151', lineHeight:1.5, margin:'0 0 10px 0' }}>{analysis.competitor_insights.market_position}</p>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+                <div>
+                  <div style={{ fontWeight:700, fontSize:10.5, color:'#16A34A', marginBottom:4 }}>✅ Your Advantages</div>
+                  {analysis.competitor_insights.advantages?.slice(0, 3).map((a, i) => (
+                    <div key={i} style={{ fontSize:10, color:'#4B5563', padding:'2px 0', borderBottom:'1px solid #F1F5F9' }}>• {a}</div>
+                  ))}
+                </div>
+                <div>
+                  <div style={{ fontWeight:700, fontSize:10.5, color:'#DC2626', marginBottom:4 }}>⚠️ Key Gaps</div>
+                  {analysis.competitor_insights.key_gaps?.slice(0, 3).map((g, i) => (
+                    <div key={i} style={{ fontSize:10, color:'#4B5563', padding:'2px 0', borderBottom:'1px solid #F1F5F9' }}>• {g}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* AI Business Summary */}
         <div style={{ flex:1 }}>
-          <h3 style={{ fontFamily:'Georgia, serif', fontSize:16, fontWeight:700, color:'#1E293B', marginBottom:12 }}>
+          <h3 style={{ fontFamily:'Georgia, serif', fontSize:15, fontWeight:700, color:'#1E293B', marginBottom:8 }}>
             AI Business Summary
           </h3>
-          <div style={{ background:'#F8FAFC', borderRadius:12, padding:'24px', border:'1px solid #E2E8F0', lineHeight:1.7 }}>
-            <p style={{ fontSize:11.5, color:'#374151', margin:0 }}>
+          <div style={{ background:'#F8FAFC', borderRadius:12, padding:'16px 20px', border:'1px solid #E2E8F0', lineHeight:1.6 }}>
+            <p style={{ fontSize:11, color:'#374151', margin:0 }}>
               {analysis.summary || 'No summary available.'}
             </p>
           </div>

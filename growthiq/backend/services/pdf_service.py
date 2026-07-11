@@ -185,7 +185,42 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
         ("RIGHTPADDING", (0, 0), (-1, -1), 12),
     ]))
     story.append(swot_table)
-    story.append(Spacer(1, 0.8*cm))
+    story.append(Spacer(1, 0.4*cm))
+
+    # ── Competitor Analysis (Page 2) ──────────────────────────────────────────
+    comp = analysis.get("competitor_insights", {})
+    if comp:
+        story.append(Paragraph("Competitor Analysis", h2_style))
+        advantages_list = "<br/>".join(f"• {a}" for a in comp.get("advantages", [])[:3])
+        gaps_list = "<br/>".join(f"• {g}" for g in comp.get("key_gaps", [])[:3])
+        comp_table_data = [
+            [
+                Paragraph("<b>Market Position</b>", ParagraphStyle("CompPosLabel", fontName="Helvetica-Bold", fontSize=11, textColor=BRAND_DARK)),
+                Paragraph(comp.get("market_position", "N/A"), body_style)
+            ],
+            [
+                Paragraph("<b>✅ Your Advantages</b>", ParagraphStyle("AdvHead", fontName="Helvetica-Bold", fontSize=11, textColor=SUCCESS)),
+                Paragraph("<b>⚠️ Key Gaps</b>", ParagraphStyle("GapHead", fontName="Helvetica-Bold", fontSize=11, textColor=DANGER))
+            ],
+            [
+                Paragraph(advantages_list, ParagraphStyle("AdvBody", parent=body_style, fontSize=10.5, leading=14)),
+                Paragraph(gaps_list, ParagraphStyle("GapBody", parent=body_style, fontSize=10.5, leading=14))
+            ]
+        ]
+        comp_table = Table(comp_table_data, colWidths=[9*cm, 9*cm])
+        comp_table.setStyle(TableStyle([
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#E5E7EB")),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("BACKGROUND", (0, 0), (-1, 0), LIGHT_BG),
+            ("BACKGROUND", (0, 1), (0, 1), colors.HexColor("#F0FDF4")),
+            ("BACKGROUND", (1, 1), (1, 1), colors.HexColor("#FFF1F2")),
+            ("TOPPADDING", (0, 0), (-1, -1), 8),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+            ("LEFTPADDING", (0, 0), (-1, -1), 12),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 12),
+        ]))
+        story.append(comp_table)
+        story.append(Spacer(1, 0.4*cm))
 
     story.append(Paragraph("AI Business Performance Summary", h2_style))
     story.append(Paragraph(analysis.get("summary", "No performance summary available."), body_style))
