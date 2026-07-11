@@ -159,6 +159,21 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
           </div>
         </div>
 
+        {/* SEO Audit Results */}
+        {analysis.seo_tips?.length > 0 && (
+          <div style={{ marginTop: 20, marginBottom: 20 }}>
+            <h2 style={{ fontFamily:'Georgia, serif', fontSize:15, fontWeight:700, color:'#1E293B', marginBottom:10 }}>SEO Audit Results</h2>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:10 }}>
+              {analysis.seo_tips.slice(0, 2).map((s, i) => (
+                <div key={i} style={{ display:'flex', gap:10, padding:'10px 12px', background:'#F8FAFC', borderRadius:8, border:'1px solid #E2E8F0', alignItems:'center' }}>
+                  <div style={{ width:18, height:18, borderRadius:'50%', background:'#6366F1', color:'#fff', fontSize:9, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>{i+1}</div>
+                  <div style={{ fontSize:10.5, fontWeight:600, color:'#1E293B', lineHeight:1.3 }}>{s.tip}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
         <div style={{ fontSize:10, color:'#94A3B8', textAlign:'center', marginTop:20 }}>
           Confidential · Powered by Gemini AI · Page 1 of 3

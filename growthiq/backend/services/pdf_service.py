@@ -145,6 +145,31 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
     ]))
     story.append(metrics_table)
 
+    # ── SEO Audit Results (Page 1) ───────────────────────────────────────────
+    seo_tips = analysis.get("seo_tips", [])
+    if seo_tips:
+        story.append(Spacer(1, 0.4*cm))
+        story.append(Paragraph("SEO Audit Results", h2_style))
+        tip1 = seo_tips[0].get("tip", "") if len(seo_tips) > 0 else ""
+        tip2 = seo_tips[1].get("tip", "") if len(seo_tips) > 1 else ""
+        seo_data = [
+            [
+                Paragraph(f"<b>1.</b> {tip1}", body_style),
+                Paragraph(f"<b>2.</b> {tip2}", body_style) if tip2 else ""
+            ]
+        ]
+        seo_table = Table(seo_data, colWidths=[9*cm, 9*cm])
+        seo_table.setStyle(TableStyle([
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#E5E7EB")),
+            ("BACKGROUND", (0, 0), (-1, -1), LIGHT_BG),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("TOPPADDING", (0, 0), (-1, -1), 8),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+            ("LEFTPADDING", (0, 0), (-1, -1), 12),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 12),
+        ]))
+        story.append(seo_table)
+
     # ── Page Break to Page 2 ────────────────────────────────────────────────
     story.append(PageBreak())
 
