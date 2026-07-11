@@ -150,8 +150,8 @@ def generate_business_report(business: dict, analysis: dict) -> BytesIO:
     if seo_tips:
         story.append(Spacer(1, 0.4*cm))
         story.append(Paragraph("SEO Audit Results", h2_style))
-        tip1 = seo_tips[0].get("tip", "") if len(seo_tips) > 0 else ""
-        tip2 = seo_tips[1].get("tip", "") if len(seo_tips) > 1 else ""
+        tip1 = seo_tips[0].get("recommendation", seo_tips[0].get("tip", "")) if len(seo_tips) > 0 else ""
+        tip2 = seo_tips[1].get("recommendation", seo_tips[1].get("tip", "")) if len(seo_tips) > 1 else ""
         seo_data = [
             [
                 Paragraph(f"<b>1.</b> {tip1}", body_style),

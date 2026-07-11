@@ -16,7 +16,7 @@ interface AnalysisData {
   score_breakdown: Record<string, number>;
   recommendations: Recommendation[];
   swot: { strengths: string[]; weaknesses: string[]; opportunities: string[]; threats: string[] };
-  seo_tips: { tip: string; impact: string }[];
+  seo_tips: { recommendation: string; tip?: string; impact: string }[];
   competitor_insights: { market_position: string; key_gaps: string[]; advantages: string[] };
   marketing_plan: { week: number; strategy: string; tactics: string[] }[];
   summary: string;
@@ -167,7 +167,7 @@ function PdfContent({ user, analysis }: { user: any; analysis: AnalysisData }) {
               {analysis.seo_tips.slice(0, 2).map((s, i) => (
                 <div key={i} style={{ display:'flex', gap:10, padding:'10px 12px', background:'#F8FAFC', borderRadius:8, border:'1px solid #E2E8F0', alignItems:'center' }}>
                   <div style={{ width:18, height:18, borderRadius:'50%', background:'#6366F1', color:'#fff', fontSize:9, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>{i+1}</div>
-                  <div style={{ fontSize:10.5, fontWeight:600, color:'#1E293B', lineHeight:1.3 }}>{s.tip}</div>
+                  <div style={{ fontSize:10.5, fontWeight:600, color:'#1E293B', lineHeight:1.3 }}>{s.recommendation || s.tip}</div>
                 </div>
               ))}
             </div>
