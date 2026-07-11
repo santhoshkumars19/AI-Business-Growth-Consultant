@@ -41,8 +41,8 @@ export default function RegisterPage() {
     try {
       await register(form.email, form.password, form.name, 'user');
       router.push('/onboarding');
-    } catch {
-      setError('Registration failed. Please make sure the email format is correct.');
+    } catch (err: any) {
+      setError(err?.message || 'Registration failed. Please try again.');
     } finally { setLoading(false); }
   };
 
